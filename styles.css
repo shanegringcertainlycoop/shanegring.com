@@ -92,12 +92,7 @@ section {
    NAVIGATION
    ══════════════════════════════════════════════════════════════ */
 nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: saturate(180%) blur(10px);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -115,6 +110,17 @@ nav .logo {
   letter-spacing: -0.01em;
   color: var(--fg);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+nav .logo img {
+  width: 32px;
+  height: 32px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 nav ul {
@@ -1181,6 +1187,20 @@ img.cs-screenshot {
 
 .shape-icon-featured {
   margin-bottom: 1.1rem;
+}
+
+/* Real SVG icons (replace .shape-icon placeholders).
+   Pixel-art icons — preserve sharp pixel boundaries when scaled. */
+img.shape-icon {
+  display: block;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .shape-icon .placeholder-label {
