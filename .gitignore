@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Cloudflare Wrangler local dev artifacts
+.wrangler/
+
+# Editor cruft
+.vscode/
+.idea/
+
+# Logs
+*.log

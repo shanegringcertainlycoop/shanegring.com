@@ -1,0 +1,1 @@
+Logos go here. Drop SVG (preferred) or PNG with names: teambuildr.svg, drvn-golf.svg, seam.svg, iwbi.svg, usgbc.svg. Single-color SVGs work best with the monochrome theme (the CSS inverts them to white).
