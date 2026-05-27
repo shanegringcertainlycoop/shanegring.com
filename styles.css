@@ -230,6 +230,16 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   font-weight: 600;
 }
 
+/* Stanza paragraph — 3 short lines that read as a single beat */
+.hero-stanza {
+  border-left: 2px solid var(--border-strong);
+  padding-left: 1.1rem;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  color: var(--fg);
+  font-weight: 500;
+  line-height: 1.65;
+}
+
 .hero-ctas {
   display: flex;
   flex-wrap: wrap;
@@ -349,6 +359,19 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
 }
 
 .trusted-item:has(img) .trusted-wordmark { display: none; }
+
+/* SEAM logo is a white-on-transparent wordmark — invert it so it shows
+   on the light page background. Applies in trusted-by, the work-card,
+   and the case-study hero. */
+.trusted-item img[src*="seam"],
+.work-card-logo[src*="seam"],
+.cs-hero-logo[src*="seam"] {
+  filter: invert(1) grayscale(100%) opacity(0.85);
+}
+
+.trusted-item:hover img[src*="seam"] {
+  filter: invert(1) grayscale(100%) opacity(1);
+}
 
 @media (max-width: 600px) {
   .trusted-grid { gap: 1.75rem 2.5rem; }
@@ -1064,6 +1087,208 @@ img.cs-screenshot {
 
 .cs-visit .btn-arrow { transition: transform 0.2s ease; }
 .cs-visit:hover .btn-arrow { transform: translateX(2px); }
+
+/* In-body subsection title for long case studies */
+.cs-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.25;
+  color: var(--fg);
+  margin: 2.5rem 0 1.1rem;
+  max-width: 760px;
+}
+
+/* Sub-subsection title (h3 inside a cs-section) */
+.cs-subsection-title {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--dim);
+  margin: 1.75rem 0 0.85rem;
+  max-width: 760px;
+}
+
+/* Dash-marked bullets for case-study body sections */
+.cs-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.cs-bullets li {
+  position: relative;
+  padding: 0.55rem 0 0.55rem 1.6rem;
+  font-size: 1rem;
+  color: var(--mid);
+  line-height: 1.7;
+  max-width: 760px;
+}
+
+.cs-bullets li::before {
+  content: "\2014"; /* em dash */
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  color: var(--dim);
+  font-weight: 500;
+}
+
+.cs-bullets li strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* Richer variant — adds top/bottom dividers between heavy items */
+.cs-bullets.cs-bullets-rich li {
+  padding: 1.15rem 0 1.15rem 1.6rem;
+  border-top: 1px solid var(--border);
+}
+
+.cs-bullets.cs-bullets-rich li:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.cs-bullets.cs-bullets-rich li::before {
+  top: 1.15rem;
+}
+
+/* Numbered variant — renders 01 / 02 / 03 instead of em-dashes */
+.cs-bullets.cs-bullets-numbered {
+  counter-reset: cs-num;
+  padding-left: 0;
+}
+
+.cs-bullets.cs-bullets-numbered li {
+  counter-increment: cs-num;
+  padding: 1.15rem 0 1.15rem 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.cs-bullets.cs-bullets-numbered li:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.cs-bullets.cs-bullets-numbered li::before {
+  content: counter(cs-num, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  top: 1.2rem;
+  left: 0;
+}
+
+/* Pull quotes / testimonials */
+.cs-quote {
+  margin: 2.25rem 0;
+  padding: 1.75rem 2rem;
+  background: var(--bg-soft);
+  border-left: 3px solid var(--fg);
+  border-radius: 0 12px 12px 0;
+}
+
+.cs-quote blockquote {
+  font-size: 1.05rem;
+  color: var(--fg);
+  font-style: italic;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  max-width: 720px;
+}
+
+.cs-quote figcaption {
+  font-size: 0.88rem;
+  color: var(--dim);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.cs-quote-status {
+  font-style: italic;
+  opacity: 0.7;
+  margin-left: 0.4rem;
+}
+
+@media (max-width: 600px) {
+  .cs-quote { padding: 1.25rem 1.25rem 1.25rem 1.5rem; }
+}
+
+/* Subline under the work-card hook on the homepage */
+.work-card-subline {
+  font-size: 0.9rem;
+  color: var(--mid);
+  line-height: 1.55;
+  margin-top: -0.25rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUOTES GRID (homepage testimonial section)
+   ══════════════════════════════════════════════════════════════ */
+.quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.quote-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  margin: 0;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 6px 16px -10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.quote-card blockquote {
+  font-size: 1rem;
+  color: var(--fg);
+  font-style: italic;
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.quote-card figcaption {
+  font-size: 0.88rem;
+  color: var(--dim);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.quote-card figcaption .quote-name {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.quote-card figcaption .quote-role {
+  font-weight: 500;
+}
+
+.quote-card figcaption .cs-quote-status {
+  font-style: italic;
+  opacity: 0.7;
+  margin-left: 0;
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 720px) {
+  .quotes-grid { grid-template-columns: 1fr; }
+}
 
 /* Bottom CTA block — quieter than the homepage dark card,
    used to land case-study readers in the Transfer Session funnel */
