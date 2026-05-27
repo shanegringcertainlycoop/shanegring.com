@@ -653,10 +653,14 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   margin-top: 3rem;
 }
 
-/* Real hero image (replaces .hero-img placeholder) */
+/* Real hero image (replaces .hero-img placeholder).
+   Source can be any aspect; we crop to a 2:1 panoramic banner. */
 img.hero-img {
+  width: 100%;
   height: auto;
-  aspect-ratio: auto;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+  object-position: center center;
   display: block;
   border-radius: 14px;
   border: 1px solid var(--border);
@@ -827,14 +831,14 @@ img.about-portrait {
   border-radius: 0;
   border: 0;
   border-bottom: 1px solid var(--border);
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 1 / 1;
   width: 100%;
   display: block;
 }
 
 .work-card-img {
   object-fit: cover;
-  object-position: top center;
+  object-position: center center;
 }
 
 .work-card-body {
