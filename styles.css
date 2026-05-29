@@ -360,19 +360,6 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
 
 .trusted-item:has(img) .trusted-wordmark { display: none; }
 
-/* SEAM logo is a white-on-transparent wordmark — invert it so it shows
-   on the light page background. Applies in trusted-by, the work-card,
-   and the case-study hero. */
-.trusted-item img[src*="seam"],
-.work-card-logo[src*="seam"],
-.cs-hero-logo[src*="seam"] {
-  filter: invert(1) grayscale(100%) opacity(0.85);
-}
-
-.trusted-item:hover img[src*="seam"] {
-  filter: invert(1) grayscale(100%) opacity(1);
-}
-
 @media (max-width: 600px) {
   .trusted-grid { gap: 1.75rem 2.5rem; }
   .trusted-item img { max-height: 1.75rem; max-width: 8rem; }
