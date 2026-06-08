@@ -10,3 +10,7 @@
 
 # Logs
 *.log
+
+# Mobile review artifacts (screenshots + Playwright capture scripts)
+screenshots/
+scripts/

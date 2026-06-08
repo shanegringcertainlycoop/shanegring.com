@@ -113,6 +113,9 @@ nav .logo {
   display: inline-flex;
   align-items: center;
   line-height: 0;
+  /* Invisible 44x44 hit area around the 32px smiley */
+  padding: 0.375rem;
+  margin: -0.375rem;
 }
 
 nav .logo img {
@@ -940,8 +943,20 @@ img.about-portrait {
   font-size: 0.88rem;
   font-weight: 500;
   text-decoration: none;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
+  padding: 0.6rem 0;
+  min-height: 44px;
   transition: color 0.15s ease;
+}
+
+/* At/below the 768px breakpoint the back-link and section eyebrow used
+   to read as one run-on string. Force the back-link onto its own row. */
+@media (max-width: 768px) {
+  .cs-back {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 }
 
 .cs-back:hover { color: var(--fg); }
@@ -1068,6 +1083,8 @@ img.cs-screenshot {
   text-underline-offset: 4px;
   text-decoration-color: var(--border-strong);
   transition: text-decoration-color 0.15s ease;
+  padding: 0.55rem 0;
+  min-height: 44px;
 }
 
 .cs-visit:hover { text-decoration-color: var(--fg); }
@@ -1254,13 +1271,17 @@ img.om-hero-img {
   border-bottom: 1px solid var(--border);
 }
 
+.cs-bullets.cs-bullets-numbered li {
+  padding-left: 2.75rem;
+}
+
 .cs-bullets.cs-bullets-numbered li::before {
   content: counter(cs-num, decimal-leading-zero);
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--dim);
+  color: var(--mid);
   top: 1.2rem;
   left: 0;
 }
@@ -1437,6 +1458,8 @@ img.om-hero-img {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  padding: 0.6rem 0;
+  min-height: 44px;
   transition: color 0.15s ease;
 }
 
@@ -1752,12 +1775,13 @@ img.shape-icon {
   color: var(--fg);
   font-family: inherit;
   font-size: 1rem;
-  padding: 0.7rem 0.85rem;
+  padding: 0.85rem;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   resize: vertical;
   width: 100%;
   border-radius: 8px;
+  min-height: 48px;
 }
 
 .contact-field input:focus,
@@ -1886,6 +1910,17 @@ footer {
   color: var(--dim);
 }
 
+.footer-link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  padding: 0.6rem 0;
+  min-height: 44px;
+  transition: color 0.15s ease;
+}
+
+.footer-link:hover { color: var(--fg); }
+
 /* ══════════════════════════════════════════════════════════════
    ANIMATIONS (minimal — fade on enter only)
    ══════════════════════════════════════════════════════════════ */
@@ -1934,11 +1969,14 @@ footer {
   }
   nav ul.open a {
     font-size: 1rem;
-    padding: 0.4rem 0;
+    padding: 0.75rem 0;
     display: block;
+    min-height: 44px;
   }
   nav ul.open .nav-cta {
-    padding: 0.6rem 1rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    text-align: center;
   }
   .nav-toggle {
     display: block;
