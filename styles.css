@@ -198,9 +198,18 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   padding: 5.5rem 0 5rem;
 }
 
-/* Hero breaks out wider than the rest of the site for the two-column layout */
-.hero .container {
-  max-width: 1320px;
+/* Above the collapse breakpoint, the hero breaks out wider than the rest of
+   the site but stays left-aligned with the 880px content column — only the
+   calendar overhangs to the right. The left margin tracks the centered content
+   container exactly (its own 1.75rem padding supplies the gutter); the right
+   margin keeps a stable ~1100px hero so the calendar gets room without going
+   edge-to-edge. Below 881px the default .container takes over (normal stacking). */
+@media (min-width: 881px) {
+  .hero .container {
+    max-width: none;
+    margin-left: max(0px, calc((100vw - 880px) / 2));
+    margin-right: max(1.75rem, calc((100vw - 1320px) / 2));
+  }
 }
 
 .hero-grid {
