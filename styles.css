@@ -2031,11 +2031,18 @@ footer {
    RESPONSIVE
    ══════════════════════════════════════════════════════════════ */
 
-/* Collapse the two-column hero before the calendar column gets cramped */
+/* Collapse the two-column hero before the calendar column gets cramped.
+   When stacked, cap the calendar to a tidy booking-card width and left-align
+   it so it doesn't balloon to full width and flip into Cal's wide
+   month+time-slots layout. */
 @media (max-width: 880px) {
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 2.75rem;
+  }
+  .hero-cal {
+    max-width: 460px;
+    justify-self: start;
   }
 }
 
