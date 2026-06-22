@@ -204,7 +204,7 @@
       <li><a href="#work">Work</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
-      <li><a href="#contact" class="nav-cta">Book</a></li>
+      <li><a href="#book" class="nav-cta">Book</a></li>
     </ul>
   </div>
 </nav>
@@ -214,49 +214,44 @@
      ════════════════════════════════════════════════════════════ -->
 <header class="hero" id="top">
   <div class="container">
-    <span class="hero-eyebrow">Shane Gring &middot; Operations rebuild</span>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-identity">
+          <img class="hero-avatar" src="/images/portrait.png" alt="Shane Gring" width="52" height="52" fetchpriority="high">
+          <span class="hero-eyebrow">Shane Gring &middot; Operations rebuild</span>
+        </div>
 
-    <h1 class="hero-headline">
-      I help teams build the operations&nbsp;a growing business has
-      outgrown &mdash; without hiring a&nbsp;COO or&nbsp;CMO.
-    </h1>
+        <h1 class="hero-headline">
+          Build the operating layer your business&nbsp;has outgrown.
+        </h1>
 
-    <div class="hero-body">
-      <p>
-        Growing businesses hit a point where how they got here stops
-        working.
-      </p>
+        <p class="hero-lead">
+          Fifteen years doing this for growing teams &mdash; ops,
+          marketing ops, and rev ops, without hiring a full-time
+          COO or&nbsp;CMO.
+        </p>
 
-      <p class="hero-stanza">
-        The judgment stays with the few people who built it.<br>
-        The standards hold because the same people keep holding them.<br>
-        The work ships because those people keep shipping it. The team
-        can't move faster than they can.
-      </p>
+        <div class="hero-ctas">
+          <a class="btn-primary" href="#book">
+            Book a call <span class="btn-arrow">&rarr;</span>
+          </a>
+          <a class="btn-secondary" href="#approach">
+            How it works <span class="btn-arrow">&rarr;</span>
+          </a>
+        </div>
+      </div>
 
-      <p>
-        That's when the company needs someone from the outside &mdash;
-        inside the work, building the operating layer the team can run on.
-      </p>
-
-      <p>
-        I have fifteen years of building these operating layers &mdash;
-        ops, marketing ops, rev ops. At IWBI, DRVN, TeamBuildr, and the
-        kind of company that calls when the team has outpaced the
-        operations.&nbsp;<span class="cursor-blink"></span>
-      </p>
+      <aside class="hero-cal" id="book" aria-label="Book a call with Shane">
+        <p class="hero-cal-label">
+          Grab thirty minutes on my calendar &mdash; no agenda needed,
+          we'll see if it's a fit.
+        </p>
+        <!-- Cal inline embed (30-minute call) -->
+        <div class="cal-embed-wrap">
+          <div id="my-cal-inline-30min" aria-label="Book a 30-minute call with Shane"></div>
+        </div>
+      </aside>
     </div>
-
-    <div class="hero-ctas">
-      <a class="btn-primary" href="#ways">
-        See how we work <span class="btn-arrow">&rarr;</span>
-      </a>
-      <a class="btn-secondary" href="#work">
-        See the work <span class="btn-arrow">&rarr;</span>
-      </a>
-    </div>
-
-    <img class="hero-img" src="/images/hero.png" alt="Operations rebuild for founder-dependent businesses" fetchpriority="high" width="1024" height="1024">
   </div>
 </header>
 
@@ -283,6 +278,42 @@
         <img src="logos/iwbi.svg" alt="International WELL Building Institute" onerror="this.remove()">
         <span class="trusted-wordmark">IWBI</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     APPROACH (the narrative that used to lead the hero)
+     ════════════════════════════════════════════════════════════ -->
+<section id="approach" class="fade-in">
+  <div class="container">
+    <span class="section-eyebrow">Why this work</span>
+    <h2 class="section-title">When how you got here stops working.</h2>
+
+    <div class="lede-text">
+      <p>
+        Growing businesses hit a point where how they got here stops
+        working.
+      </p>
+
+      <p class="hero-stanza">
+        The judgment stays with the few people who built it.<br>
+        The standards hold because the same people keep holding them.<br>
+        The work ships because those people keep shipping it. The team
+        can't move faster than they can.
+      </p>
+
+      <p>
+        That's when the company needs someone from the outside &mdash;
+        inside the work, building the operating layer the team can run on.
+      </p>
+
+      <p>
+        I have fifteen years of building these operating layers &mdash;
+        ops, marketing ops, rev ops. At IWBI, DRVN, TeamBuildr, and the
+        kind of company that calls when the team has outpaced the
+        operations.
+      </p>
     </div>
   </div>
 </section>
@@ -622,16 +653,10 @@
     <h2 class="section-title">Want to talk before building your Operating Map?</h2>
 
     <p class="contact-cal-label">
-      Grab thirty minutes on my calendar. No agenda needed &mdash; we'll
-      see if it's a fit.
+      <a href="#book">Grab thirty minutes on my calendar</a> at the top of
+      the page &mdash; or send a message and I'll be in touch within a
+      couple of days.
     </p>
-
-    <!-- Cal inline embed (30-minute call) -->
-    <div class="cal-embed-wrap">
-      <div id="my-cal-inline-30min" aria-label="Book a 30-minute call with Shane"></div>
-    </div>
-
-    <p class="contact-divider"><span>Or send a message</span></p>
 
     <div class="contact-sent" id="contact-sent" role="status">
       <strong>Got it.</strong> Your message just landed in my inbox &mdash; I'll be in touch within a couple of days.
@@ -713,7 +738,7 @@
     calLink: "shane-gring-y1p1dw/30min",
   });
 
-  Cal.ns["30min"]("ui", {"hideEventTypeDetails":false,"layout":"month_view","theme":"light"});
+  Cal.ns["30min"]("ui", {"hideEventTypeDetails":true,"layout":"month_view","theme":"light"});
 </script>
 
 <!-- ════════════════════════════════════════════════════════════
