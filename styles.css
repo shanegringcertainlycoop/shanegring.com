@@ -239,6 +239,15 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
 
 .hero-cal .cal-embed-wrap { margin: 0; }
 
+.hero-cal-note {
+  margin: 0.8rem auto 0;
+  max-width: 30ch;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--dim);
+  text-align: center;
+}
+
 .hero-eyebrow {
   display: inline-block;
   font-size: 0.82rem;
