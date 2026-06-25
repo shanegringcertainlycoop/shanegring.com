@@ -1980,25 +1980,8 @@ img.shape-icon {
    FOOTER
    ══════════════════════════════════════════════════════════════ */
 footer {
-  border-top: 0;
-  padding: 0 0 2.5rem;
-}
-
-/* Pixel-art city skyline across the footer */
-.footer-city {
-  width: 100%;
-  line-height: 0;
-}
-.footer-city img {
-  display: block;
-  width: 100%;
-  height: clamp(96px, 13vw, 168px);
-  object-fit: cover;
-  object-position: bottom center;
-  image-rendering: pixelated;
-}
-footer > .container {
-  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+  padding: 3rem 0 2.5rem;
 }
 
 .footer-tag {
