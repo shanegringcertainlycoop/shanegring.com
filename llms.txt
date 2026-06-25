@@ -19,7 +19,7 @@ Education: Miami University.
 
 ## Free tools
 
-- **[Site Readiness Scan](https://shanegring.com/scan.html)** — Enter a URL and get a scored, sectioned read of how ready a site is for AI: whether AI can read it, whether it can drive its own SEO and content, and whether it could become a surface you build on rather than a brochure you maintain. Front-of-funnel toward the Operating Map.
+- **[Site Readiness Scan](https://shanegring.com/scan)** — Enter a URL and get a scored, sectioned read of how ready a site is for AI: whether AI can read it, whether it can drive its own SEO and content, and whether it could become a surface you build on rather than a brochure you maintain. Front-of-funnel toward the Operating Map.
 
 ## Who hires Shane
 
