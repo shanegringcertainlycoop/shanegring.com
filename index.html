@@ -171,6 +171,12 @@
 
 <body>
 
+<a class="announce-bar" href="/scan">
+  <span class="announce-tag">New</span>
+  <span class="announce-text">Free Site Readiness Scan &mdash; see how ready your site is for AI</span>
+  <span class="announce-arrow btn-arrow">&rarr;</span>
+</a>
+
 <!--
   ════════════════════════════════════════════════════════════════════════════
   TODO before going cold-outbound live:
@@ -383,7 +389,7 @@
 <section id="scan-cta" class="fade-in">
   <div class="container">
     <div class="scan-cta">
-      <div class="scan-cta-text">
+      <div class="scan-cta-main">
         <span class="section-eyebrow">Free tool</span>
         <h2 class="scan-cta-title">Not ready to talk? Read your site first.</h2>
         <p class="scan-cta-body">
@@ -392,10 +398,26 @@
           content, and to become a surface you build on. Enter a URL, get it
           back in about half a minute.
         </p>
+        <a class="btn-primary scan-cta-btn" href="/scan">
+          Run a free scan <span class="btn-arrow">&rarr;</span>
+        </a>
       </div>
-      <a class="btn-primary scan-cta-btn" href="/scan">
-        Run a free scan <span class="btn-arrow">&rarr;</span>
-      </a>
+      <div class="scan-cta-mock" aria-hidden="true">
+        <div class="sr-gauge scan-cta-gauge">
+          <svg class="sr-ring" width="104" height="104" viewBox="0 0 104 104">
+            <circle cx="52" cy="52" r="46" fill="none" stroke="var(--border)" stroke-width="8"/>
+            <circle cx="52" cy="52" r="46" fill="none" stroke="var(--fg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="80.93" transform="rotate(-90 52 52)"/>
+          </svg>
+          <span class="sr-gauge-num scan-cta-gauge-num">72</span>
+        </div>
+        <span class="scan-cta-mock-label">Site readiness</span>
+        <div class="scan-cta-bars">
+          <span style="width:82%"></span>
+          <span style="width:54%"></span>
+          <span style="width:64%"></span>
+          <span style="width:73%"></span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
