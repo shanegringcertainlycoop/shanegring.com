@@ -2208,124 +2208,188 @@ footer {
 }
 
 /* Result view */
-.sr-result { margin-top: 2.5rem; scroll-margin-top: 2rem; }
+.sr-result { margin-top: 2.75rem; scroll-margin-top: 2rem; }
 
-.sr-overall {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem 2rem;
-  padding-bottom: 1.75rem;
-  border-bottom: 1px solid var(--border);
+/* Staggered reveal */
+.sr-result > * { opacity: 0; transform: translateY(10px); }
+.sr-result.sr-reveal > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.sr-result.sr-reveal > *:nth-child(2) { transition-delay: 0.08s; }
+.sr-result.sr-reveal > *:nth-child(3) { transition-delay: 0.16s; }
+.sr-result.sr-reveal > *:nth-child(4) { transition-delay: 0.24s; }
+@media (prefers-reduced-motion: reduce) {
+  .sr-result > *, .sr-result.sr-reveal > * {
+    opacity: 1; transform: none; transition: none;
+  }
 }
 
-.sr-site {
-  font-size: 1.15rem;
+/* Score gauge — shared motif, two sizes */
+.sr-gauge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.sr-gauge > * { grid-area: 1 / 1; }
+.sr-ring { display: block; }
+.sr-gauge-num {
+  font-weight: 600;
   color: var(--fg);
-  font-weight: 600;
-  margin: 0.5rem 0 0;
-  word-break: break-word;
-}
-
-.sr-overall-score {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-}
-
-.sr-overall-num {
-  font-size: clamp(2.6rem, 6vw, 3.4rem);
-  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--fg);
+  font-variant-numeric: tabular-nums;
 }
+.sr-gauge-lg .sr-gauge-num { font-size: 3rem; }
+.sr-gauge-sm .sr-gauge-num { font-size: 1.15rem; }
 
-.sr-overall-band {
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dim);
-}
-
-.sr-lenses {
-  display: grid;
-  gap: 1.75rem;
-  margin-top: 2rem;
-}
-
-.sr-lens {
-  padding-bottom: 1.75rem;
+/* Overall hero — the focal point */
+.sr-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 2.5rem;
+  padding-bottom: 2.25rem;
   border-bottom: 1px solid var(--border);
 }
-.sr-lens:last-child { border-bottom: 0; padding-bottom: 0; }
-
-.sr-lens-head {
+.sr-hero-meta { min-width: 0; }
+.sr-id {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
+  margin-top: 0.75rem;
 }
-
-.sr-lens-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+.sr-thumb {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  object-position: top center;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  flex-shrink: 0;
+  display: block;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 12px 26px -18px rgba(0, 0, 0, 0.28);
+}
+.sr-id-text { min-width: 0; }
+.sr-site {
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
   color: var(--fg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.4rem;
+  word-break: break-word;
+}
+.sr-band {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
   margin: 0;
 }
 
-.sr-lens-score {
-  font-size: 1.35rem;
+/* Lenses — numbered, each with an echoing gauge */
+.sr-lenses { margin-top: 2.5rem; }
+.sr-lens {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  column-gap: 1.5rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.sr-lens:first-child { padding-top: 0; }
+.sr-lens:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.sr-lens-num {
+  font-size: 0.85rem;
   font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--border-strong);
+  font-variant-numeric: tabular-nums;
+  padding-top: 0.35rem;
+}
+.sr-lens-body { min-width: 0; }
+.sr-lens-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
   color: var(--fg);
-  white-space: nowrap;
+  margin: 0 0 0.6rem;
 }
-.sr-lens-max { font-size: 0.85rem; color: var(--dim); font-weight: 500; }
-
-.sr-bar {
-  height: 6px;
-  border-radius: 999px;
-  background: var(--border);
-  margin: 0.85rem 0 1.1rem;
-  overflow: hidden;
-}
-.sr-bar span {
-  display: block;
-  height: 100%;
-  background: var(--fg);
-  border-radius: 999px;
-}
-
 .sr-lens-read {
   font-size: 1.02rem;
   color: var(--mid);
   line-height: 1.7;
-  max-width: 760px;
   margin: 0;
+  max-width: 60ch;
 }
 
-.sr-opps { margin-top: 2.5rem; }
-.sr-opps .cs-section-title { margin-top: 0; }
-
-.sr-cta {
-  margin-top: 2.5rem;
-  padding: 1.75rem;
+/* Opportunities — raised callout cards */
+.sr-opps { margin-top: 3rem; }
+.sr-opps .section-eyebrow { display: block; margin-bottom: 1.25rem; }
+.sr-opp {
+  display: flex;
+  gap: 1rem;
+  padding: 1.4rem 1.6rem;
   background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 14px;
+  margin-bottom: 1rem;
+}
+.sr-opp:last-child { margin-bottom: 0; }
+.sr-opp-mark {
+  font-size: 1.1rem;
+  color: var(--fg);
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+.sr-opp-body { min-width: 0; }
+.sr-opp-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 0 0 0.35rem;
+}
+.sr-opp-body p {
+  font-size: 1rem;
+  color: var(--mid);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 60ch;
+}
+
+/* CTA — inverted closing beat */
+.sr-cta {
+  margin-top: 3rem;
+  padding: 2.25rem;
+  background: var(--fg);
+  border-radius: 16px;
 }
 .sr-cta p {
-  font-size: 1.05rem;
-  color: var(--mid);
-  line-height: 1.7;
-  margin: 0 0 1.25rem;
-  max-width: 620px;
+  font-size: 1.08rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.65;
+  margin: 0 0 1.5rem;
+  max-width: 38rem;
 }
+.sr-cta .btn-primary {
+  background: var(--bg);
+  border-color: var(--bg);
+  color: var(--fg);
+}
+.sr-cta .btn-primary:hover { background: #f0f0f0; }
 
 @media (max-width: 600px) {
   .sr-form { grid-template-columns: 1fr; gap: 1rem; }
+  .sr-hero { gap: 1.25rem; }
+  .sr-lens { column-gap: 1rem; padding: 1.5rem 0; }
+  .sr-cta { padding: 1.6rem; }
 }

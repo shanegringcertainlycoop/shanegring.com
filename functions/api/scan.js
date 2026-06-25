@@ -393,6 +393,7 @@ export async function onRequestPost(context) {
 
   const out = {
     site: site,
+    url: u.href,
     overall: result.overall,
     lenses: result.lenses,
     opportunities: result.opportunities || [],

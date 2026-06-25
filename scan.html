@@ -182,16 +182,29 @@
     return 'Not yet';
   }
 
-  function lensCard(lens) {
+  function ring(score, size, stroke) {
+    var s = Math.max(0, Math.min(100, score));
+    var r = (size - stroke) / 2;
+    var c = 2 * Math.PI * r;
+    var off = c * (1 - s / 100);
+    var ctr = size / 2;
+    return '<svg class="sr-ring" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" aria-hidden="true">' +
+      '<circle cx="' + ctr + '" cy="' + ctr + '" r="' + r + '" fill="none" stroke="var(--border)" stroke-width="' + stroke + '"/>' +
+      '<circle cx="' + ctr + '" cy="' + ctr + '" r="' + r + '" fill="none" stroke="var(--fg)" stroke-width="' + stroke + '" stroke-linecap="round" stroke-dasharray="' + c.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) + '" transform="rotate(-90 ' + ctr + ' ' + ctr + ')"/>' +
+      '</svg>';
+  }
+
+  function lensCard(lens, i) {
     var score = Math.max(0, Math.min(100, parseInt(lens.score, 10) || 0));
+    var num = ('0' + (i + 1)).slice(-2);
     return '' +
       '<div class="sr-lens">' +
-        '<div class="sr-lens-head">' +
+        '<span class="sr-lens-num">' + num + '</span>' +
+        '<div class="sr-lens-body">' +
           '<h3 class="sr-lens-title">' + esc(lens.title) + '</h3>' +
-          '<span class="sr-lens-score">' + score + '<span class="sr-lens-max">/100</span></span>' +
+          '<p class="sr-lens-read">' + esc(lens.read) + '</p>' +
         '</div>' +
-        '<div class="sr-bar"><span style="width:' + score + '%"></span></div>' +
-        '<p class="sr-lens-read">' + esc(lens.read) + '</p>' +
+        '<div class="sr-gauge sr-gauge-sm">' + ring(score, 62, 5) + '<span class="sr-gauge-num">' + score + '</span></div>' +
       '</div>';
   }
 
@@ -199,27 +212,38 @@
     var overall = Math.max(0, Math.min(100, parseInt(data.overall, 10) || 0));
     var lenses = (data.lenses || []).map(lensCard).join('');
     var opps = (data.opportunities || []).map(function (o) {
-      return '<li><strong>' + esc(o.title) + '</strong> ' + esc(o.detail) + '</li>';
+      return '<div class="sr-opp">' +
+        '<span class="sr-opp-mark" aria-hidden="true">&rarr;</span>' +
+        '<div class="sr-opp-body"><h4 class="sr-opp-title">' + esc(o.title) + '</h4><p>' + esc(o.detail) + '</p></div>' +
+      '</div>';
     }).join('');
 
+    var target = data.url || ('https://' + (data.site || ''));
+    var shot = 'https://s.wordpress.com/mshots/v1/' + encodeURIComponent(target) + '?w=400';
+
+    resultEl.classList.remove('sr-reveal');
     resultEl.innerHTML = '' +
-      '<div class="sr-overall">' +
-        '<div>' +
+      '<div class="sr-hero">' +
+        '<div class="sr-hero-meta">' +
           '<span class="section-eyebrow">Your site, read</span>' +
-          '<p class="sr-site">' + esc(data.site || '') + '</p>' +
+          '<div class="sr-id">' +
+            '<img class="sr-thumb" src="' + shot + '" alt="Screenshot of ' + esc(data.site || '') + '" loading="lazy" width="120" height="80" onerror="this.style.display=\'none\'">' +
+            '<div class="sr-id-text">' +
+              '<p class="sr-site">' + esc(data.site || '') + '</p>' +
+              '<p class="sr-band">' + band(overall) + ' &middot; ' + overall + '/100</p>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
-        '<div class="sr-overall-score">' +
-          '<span class="sr-overall-num">' + overall + '</span>' +
-          '<span class="sr-overall-band">' + band(overall) + '</span>' +
-        '</div>' +
+        '<div class="sr-gauge sr-gauge-lg">' + ring(overall, 156, 9) + '<span class="sr-gauge-num">' + overall + '</span></div>' +
       '</div>' +
       '<div class="sr-lenses">' + lenses + '</div>' +
-      (opps ? '<div class="sr-opps"><h3 class="cs-section-title">Where I’d start</h3><ul class="cs-bullets cs-bullets-rich">' + opps + '</ul></div>' : '') +
+      (opps ? '<div class="sr-opps"><span class="section-eyebrow">Where I’d start</span>' + opps + '</div>' : '') +
       '<div class="sr-cta">' +
         '<p>Want the detailed version &mdash; what I’d actually do, in order? That’s the Operating Map.</p>' +
-        '<a class="btn-primary" href="/operating-map.html">See the Operating Map <span class="btn-arrow">&rarr;</span></a>' +
+        '<a class="btn-primary" href="/operating-map">See the Operating Map <span class="btn-arrow">&rarr;</span></a>' +
       '</div>';
     resultEl.hidden = false;
+    requestAnimationFrame(function () { resultEl.classList.add('sr-reveal'); });
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
