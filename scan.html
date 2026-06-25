@@ -273,6 +273,62 @@
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  var loaderTimer = null;
+
+  function siteLabel(u) {
+    try { return new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u).host; }
+    catch (e) { return u; }
+  }
+
+  function startLoader(url) {
+    var steps = [
+      'Fetching the page…',
+      'Reading the structure and markup…',
+      'Checking schema and crawlability…',
+      'Sizing up the content layer…',
+      'Writing the read…'
+    ];
+    statusEl.hidden = false;
+    statusEl.className = 'sr-status sr-status-loading';
+    statusEl.innerHTML = '' +
+      '<div class="sr-loader">' +
+        '<span class="sr-spinner" aria-hidden="true">' +
+          '<svg class="sr-spinner-svg" viewBox="0 0 50 50">' +
+            '<circle class="sr-spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4"/>' +
+            '<circle class="sr-spinner-arc" cx="25" cy="25" r="20" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 126"/>' +
+          '</svg>' +
+        '</span>' +
+        '<span class="sr-loader-meta">' +
+          '<span class="sr-loader-title">Reading <strong>' + esc(siteLabel(url)) + '</strong></span>' +
+          '<span class="sr-loader-step" id="sr-loader-step">' + steps[0] + '</span>' +
+        '</span>' +
+      '</div>' +
+      '<div class="sr-skeleton" aria-hidden="true">' +
+        '<div class="sr-skel-row"><span class="sr-skel-label"></span><span class="sr-skel-gauge"></span></div>' +
+        '<div class="sr-skel-row"><span class="sr-skel-label"></span><span class="sr-skel-gauge"></span></div>' +
+        '<div class="sr-skel-row"><span class="sr-skel-label"></span><span class="sr-skel-gauge"></span></div>' +
+        '<div class="sr-skel-row"><span class="sr-skel-label"></span><span class="sr-skel-gauge"></span></div>' +
+      '</div>';
+    var i = 0;
+    loaderTimer = setInterval(function () {
+      i = Math.min(i + 1, steps.length - 1);
+      var el = document.getElementById('sr-loader-step');
+      if (el) el.textContent = steps[i];
+      if (i >= steps.length - 1) { clearInterval(loaderTimer); loaderTimer = null; }
+    }, 4500);
+  }
+
+  function stopLoader() {
+    if (loaderTimer) { clearInterval(loaderTimer); loaderTimer = null; }
+  }
+
+  function showError(msg) {
+    stopLoader();
+    statusEl.hidden = false;
+    statusEl.className = 'sr-status sr-status-error';
+    statusEl.textContent = msg;
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var url = document.getElementById('sr-url').value.trim();
@@ -282,9 +338,7 @@
     submitBtn.disabled = true;
     form.classList.add('sr-form-busy');
     resultEl.hidden = true;
-    statusEl.hidden = false;
-    statusEl.className = 'sr-status sr-status-loading';
-    statusEl.textContent = 'Reading ' + url + '… this takes about half a minute.';
+    startLoader(url);
 
     fetch('/api/scan', {
       method: 'POST',
@@ -296,17 +350,16 @@
       submitBtn.disabled = false;
       form.classList.remove('sr-form-busy');
       if (!r.ok || !r.body || r.body.error) {
-        statusEl.className = 'sr-status sr-status-error';
-        statusEl.textContent = (r.body && r.body.error) || 'Something went wrong reading that site. Check the URL and try again.';
+        showError((r.body && r.body.error) || 'Something went wrong reading that site. Check the URL and try again.');
         return;
       }
+      stopLoader();
       statusEl.hidden = true;
       render(r.body);
     }).catch(function () {
       submitBtn.disabled = false;
       form.classList.remove('sr-form-busy');
-      statusEl.className = 'sr-status sr-status-error';
-      statusEl.textContent = 'Couldn’t reach the scanner. Give it a moment and try again.';
+      showError('Couldn’t reach the scanner. Give it a moment and try again.');
     });
   });
 })();
