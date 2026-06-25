@@ -1,0 +1,417 @@
+/**
+ * Site Readiness Scan — Cloudflare Pages Function (POST /api/scan)
+ *
+ * Fetches a target URL, extracts machine-legibility / SEO / build signals,
+ * sends them to Claude with a scoring rubric, returns structured JSON the
+ * /scan page renders. Captures the lead to a Google Sheet + emails Shane.
+ *
+ * Required bindings (Cloudflare Pages → Settings):
+ *   ANTHROPIC_API_KEY   secret    Anthropic API key (server-side only)
+ *   SCAN_KV             KV        rate limiting + monthly cap counter
+ * Optional:
+ *   LEAD_SHEET_URL      var       Apps Script web-app URL (append-row)
+ *   NOTIFY_EMAIL        var       email for the per-scan ping (default below)
+ *   SCAN_MODEL          var       model id (default claude-sonnet-4-6)
+ *   SCAN_MONTHLY_CAP    var       max scans/month (default 400)
+ *   SCAN_IP_HOURLY      var       max scans/IP/hour (default 3)
+ */
+
+const DEFAULT_MODEL = "claude-sonnet-4-6";
+const DEFAULT_NOTIFY = "shane.gring@gmail.com";
+const DEFAULT_MONTHLY_CAP = 400;
+const DEFAULT_IP_HOURLY = 3;
+const FETCH_TIMEOUT_MS = 9000;
+const MAX_HTML_BYTES = 600 * 1024;
+const UA = "Mozilla/5.0 (compatible; ShaneGring-SiteReadinessScan/1.0; +https://shanegring.com/scan)";
+
+function json(body, status) {
+  return new Response(JSON.stringify(body), {
+    status: status || 200,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}
+
+function fail(message, status) {
+  return json({ error: message }, status || 400);
+}
+
+function isValidEmail(e) {
+  return typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 254;
+}
+
+// Block localhost / private / link-local / metadata hosts (SSRF guard).
+function isBlockedHost(host) {
+  host = host.toLowerCase();
+  if (host === "localhost" || host.endsWith(".local") || host.endsWith(".internal")) return true;
+  if (host === "0.0.0.0" || host === "169.254.169.254" || host === "metadata.google.internal") return true;
+  const m = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m) {
+    const a = +m[1], b = +m[2];
+    if (a === 10 || a === 127 || a === 0) return true;
+    if (a === 169 && b === 254) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+  }
+  return false;
+}
+
+function normalizeUrl(raw) {
+  if (typeof raw !== "string") return null;
+  let s = raw.trim();
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+  let u;
+  try { u = new URL(s); } catch (e) { return null; }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+  if (!u.hostname || u.hostname.indexOf(".") === -1) return null;
+  if (isBlockedHost(u.hostname)) return null;
+  return u;
+}
+
+async function fetchText(url, opts) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), (opts && opts.timeout) || FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "User-Agent": UA, "Accept": (opts && opts.accept) || "text/html,*/*" },
+      redirect: "follow",
+      signal: ctrl.signal,
+      cf: { cacheTtl: 0 },
+    });
+    const status = res.status;
+    let text = "";
+    if (res.body) {
+      const reader = res.body.getReader();
+      const dec = new TextDecoder("utf-8", { fatal: false });
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        received += value.length;
+        text += dec.decode(value, { stream: true });
+        if (received >= ((opts && opts.maxBytes) || MAX_HTML_BYTES)) { try { reader.cancel(); } catch (e) {} break; }
+      }
+      text += dec.decode();
+    }
+    return { status, text, finalUrl: res.url };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+function countMatches(re, s) {
+  const m = s.match(re);
+  return m ? m.length : 0;
+}
+
+function extractSignals(html, robots, llms, sitemap) {
+  const lower = html.toLowerCase();
+  const head = (html.match(/<head[\s\S]*?<\/head>/i) || [""])[0];
+
+  const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [, ""])[1].trim().slice(0, 200);
+  const metaDesc = (head.match(/<meta[^>]+name=["']description["'][^>]*>/i) || [""])[0]
+    .match(/content=["']([^"']*)["']/i);
+  const description = metaDesc ? metaDesc[1].trim().slice(0, 300) : "";
+
+  const ogCount = countMatches(/<meta[^>]+property=["']og:[^"']+["']/gi, head);
+  const twitterCount = countMatches(/<meta[^>]+name=["']twitter:[^"']+["']/gi, head);
+  const hasCanonical = /<link[^>]+rel=["']canonical["']/i.test(head);
+  const hasViewport = /<meta[^>]+name=["']viewport["']/i.test(head);
+
+  const headings = {};
+  for (let i = 1; i <= 6; i++) headings["h" + i] = countMatches(new RegExp("<h" + i + "[\\s>]", "gi"), html);
+
+  const landmarks = {};
+  ["header", "nav", "main", "footer", "article", "section", "aside"].forEach(function (tag) {
+    landmarks[tag] = countMatches(new RegExp("<" + tag + "[\\s>]", "gi"), html);
+  });
+
+  const divCount = countMatches(/<div[\s>]/gi, html);
+  const semanticCount = Object.keys(landmarks).reduce(function (a, k) { return a + landmarks[k]; }, 0);
+
+  const imgTotal = countMatches(/<img[\s>]/gi, html);
+  const imgWithAlt = countMatches(/<img[^>]+alt=["'][^"']*["']/gi, html);
+
+  // JSON-LD blocks + @type values
+  const ldBlocks = html.match(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi) || [];
+  const ldTypes = [];
+  ldBlocks.forEach(function (b) {
+    const inner = b.replace(/<[^>]+>/g, "");
+    const types = inner.match(/"@type"\s*:\s*"([^"]+)"/g) || [];
+    types.forEach(function (t) { ldTypes.push(t.replace(/.*"([^"]+)"$/, "$1")); });
+  });
+
+  // Generic / weak link text
+  const linkTexts = html.match(/<a[^>]*>([\s\S]*?)<\/a>/gi) || [];
+  let weakLinks = 0;
+  linkTexts.forEach(function (a) {
+    const t = a.replace(/<[^>]+>/g, "").trim().toLowerCase();
+    if (t === "click here" || t === "read more" || t === "here" || t === "learn more" || t === "more") weakLinks++;
+  });
+
+  // Visible text volume (strip script/style/tags) — thin body hints at client-rendering
+  const bodyOnly = (html.match(/<body[\s\S]*?<\/body>/i) || [html])[0]
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const wordCount = bodyOnly ? bodyOnly.split(" ").length : 0;
+  const scriptCount = countMatches(/<script[\s>]/gi, html);
+
+  // robots.txt AI-bot posture
+  const robotsLower = (robots || "").toLowerCase();
+  const aiBots = ["gptbot", "claudebot", "perplexitybot", "google-extended", "anthropic-ai"];
+  let robotsMentionsAi = false, robotsDisallowsAll = false;
+  aiBots.forEach(function (b) { if (robotsLower.indexOf(b) !== -1) robotsMentionsAi = true; });
+  if (/user-agent:\s*\*[\s\S]*?disallow:\s*\/\s*(\n|$)/i.test(robotsLower)) robotsDisallowsAll = true;
+
+  return {
+    title: title,
+    has_title: !!title,
+    meta_description: description,
+    has_meta_description: !!description,
+    has_canonical: hasCanonical,
+    has_viewport: hasViewport,
+    open_graph_tags: ogCount,
+    twitter_tags: twitterCount,
+    headings: headings,
+    multiple_h1: headings.h1 > 1,
+    missing_h1: headings.h1 === 0,
+    landmarks: landmarks,
+    has_main: landmarks.main > 0,
+    div_count: divCount,
+    semantic_element_count: semanticCount,
+    div_to_semantic_ratio: semanticCount ? +(divCount / semanticCount).toFixed(1) : divCount,
+    images_total: imgTotal,
+    images_with_alt: imgWithAlt,
+    alt_coverage_pct: imgTotal ? Math.round((imgWithAlt / imgTotal) * 100) : 100,
+    jsonld_blocks: ldBlocks.length,
+    jsonld_types: Array.from(new Set(ldTypes)).slice(0, 12),
+    weak_link_text_count: weakLinks,
+    visible_word_count: wordCount,
+    script_count: scriptCount,
+    likely_client_rendered: wordCount < 250 && scriptCount > 3,
+    robots_txt_present: !!(robots && robots.length),
+    robots_mentions_ai_bots: robotsMentionsAi,
+    robots_disallows_all: robotsDisallowsAll,
+    llms_txt_present: !!(llms && llms.length),
+    sitemap_xml_present: !!(sitemap && sitemap.indexOf("<urlset") !== -1) || !!(sitemap && sitemap.indexOf("<sitemapindex") !== -1),
+  };
+}
+
+const SYSTEM_PROMPT =
+"You are Shane Gring's read on a website. Shane rebuilds operations for growing businesses and treats AI as the current best tool for the work. " +
+"You are looking at one site through four lenses, using extracted signals from its HTML and its robots.txt / llms.txt / sitemap. " +
+"Be specific to THIS site — point at what the signals actually show. Voice: plain, second-person, declarative. Short sentences. Mostly plain English, not jargon. " +
+"No filler, no hedging. Do not use the words 'leverage', 'utilize', 'robust', 'seamless', or 'in today's landscape'. " +
+"Score each lens 0-100 (be honest — a real brochure site scores low on lenses 2 and 3). " +
+"For each lens write a 2-4 sentence read: what's true, and what it costs them. " +
+"Then give one or two named, high-leverage moves for THIS specific site. Name the move and why it matters; do not write the step-by-step — the detailed how is a follow-up, not this scan.\n\n" +
+"Lens 1 — Can AI read it? Semantic structure and heading order, schema/JSON-LD, meta + Open Graph + a real title, llms.txt and robots crawlability for AI agents, alt and link text, and whether the real content is in the HTML or rendered client-side where agents may miss it.\n" +
+"Lens 2 — Can it drive its own SEO and content? Real content layer vs a thin brochure (use visible_word_count), internal linking and structure, whether content looks templated/extendable, sitemap and indexability basics.\n" +
+"Lens 3 — Could it be a surface you build on? How componentized/templated the build looks, whether you could spin up landing pages and variations fast, static endpoint vs a platform you extend.\n" +
+"Lens 4 — The opportunity. The operator's read: the highest-leverage moves for this site, in plain language. Open the loop — name what's worth doing without fully prescribing how.\n\n" +
+"Return exactly four lenses in order (titles: 'Can AI read it?', 'Can it drive its own SEO and content?', 'Could it be a surface you build on?', 'The opportunity') and one or two opportunities. " +
+"The 'overall' score is your weighted judgement of the whole, not a simple average.";
+
+const OUTPUT_SCHEMA = {
+  type: "object",
+  properties: {
+    overall: { type: "integer" },
+    lenses: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          score: { type: "integer" },
+          read: { type: "string" },
+        },
+        required: ["title", "score", "read"],
+        additionalProperties: false,
+      },
+    },
+    opportunities: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          detail: { type: "string" },
+        },
+        required: ["title", "detail"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["overall", "lenses", "opportunities"],
+  additionalProperties: false,
+};
+
+async function runModel(env, site, signals) {
+  const model = env.SCAN_MODEL || DEFAULT_MODEL;
+  const userContent =
+    "Site: " + site + "\n\nExtracted signals (JSON):\n" + JSON.stringify(signals, null, 1);
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 2000,
+      system: SYSTEM_PROMPT,
+      output_config: { format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
+      messages: [{ role: "user", content: userContent }],
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error("anthropic " + res.status + ": " + body.slice(0, 300));
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find(function (b) { return b.type === "text"; });
+  if (!textBlock) throw new Error("no text block in model response");
+  return JSON.parse(textBlock.text);
+}
+
+// Best-effort lead capture — never blocks the user's result.
+async function captureLead(env, ctx, payload) {
+  const tasks = [];
+  if (env.LEAD_SHEET_URL) {
+    tasks.push(fetch(env.LEAD_SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch(function () {}));
+  }
+  const notify = env.NOTIFY_EMAIL || DEFAULT_NOTIFY;
+  tasks.push(fetch("https://formsubmit.co/ajax/" + encodeURIComponent(notify), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify({
+      _subject: "Site Readiness Scan — " + payload.site,
+      email: payload.email,
+      site: payload.site,
+      overall: payload.overall,
+      lenses: (payload.lenses || []).map(function (l) { return l.title + ": " + l.score; }).join(" | "),
+    }),
+  }).catch(function () {}));
+  const all = Promise.all(tasks);
+  if (ctx && ctx.waitUntil) ctx.waitUntil(all); else await all;
+}
+
+async function checkAndCount(env, ip) {
+  if (!env.SCAN_KV) return { ok: true };
+  const now = new Date();
+  const month = now.getUTCFullYear() + "-" + String(now.getUTCMonth() + 1).padStart(2, "0");
+  const hourBucket = month + "-" + String(now.getUTCDate()).padStart(2, "0") + "-" + String(now.getUTCHours()).padStart(2, "0");
+  const ipKey = "ip:" + ip + ":" + hourBucket;
+  const monthKey = "month:" + month;
+  const ipHourly = parseInt(env.SCAN_IP_HOURLY, 10) || DEFAULT_IP_HOURLY;
+  const monthlyCap = parseInt(env.SCAN_MONTHLY_CAP, 10) || DEFAULT_MONTHLY_CAP;
+
+  const [ipVal, monthVal] = await Promise.all([env.SCAN_KV.get(ipKey), env.SCAN_KV.get(monthKey)]);
+  const ipN = parseInt(ipVal, 10) || 0;
+  const monthN = parseInt(monthVal, 10) || 0;
+
+  if (monthN >= monthlyCap) return { ok: false, capped: true };
+  if (ipN >= ipHourly) return { ok: false, rateLimited: true };
+
+  await Promise.all([
+    env.SCAN_KV.put(ipKey, String(ipN + 1), { expirationTtl: 7200 }),
+    env.SCAN_KV.put(monthKey, String(monthN + 1), { expirationTtl: 40 * 24 * 3600 }),
+  ]);
+  return { ok: true };
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+
+  if (!env.ANTHROPIC_API_KEY) return fail("Scanner isn't configured yet.", 503);
+
+  let payload;
+  try { payload = await request.json(); } catch (e) { return fail("Send a URL and an email."); }
+
+  const email = (payload && payload.email || "").trim();
+  if (!isValidEmail(email)) return fail("That email doesn't look right.");
+
+  const u = normalizeUrl(payload && payload.url);
+  if (!u) return fail("That doesn't look like a public website URL.");
+
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const gate = await checkAndCount(env, ip);
+  if (gate.capped) {
+    return fail("The scan is at capacity for the month — leave your email on the contact page and I'll run yours by hand.", 429);
+  }
+  if (gate.rateLimited) {
+    return fail("You've run a few scans already — give it an hour and try another.", 429);
+  }
+
+  // Fetch the page + crawlability files in parallel.
+  let page, robots = "", llms = "", sitemap = "";
+  try {
+    const origin = u.protocol + "//" + u.host;
+    const results = await Promise.allSettled([
+      fetchText(u.href),
+      fetchText(origin + "/robots.txt", { maxBytes: 32 * 1024, accept: "text/plain" }),
+      fetchText(origin + "/llms.txt", { maxBytes: 64 * 1024, accept: "text/plain" }),
+      fetchText(origin + "/sitemap.xml", { maxBytes: 64 * 1024, accept: "application/xml" }),
+    ]);
+    if (results[0].status !== "fulfilled") throw new Error("page fetch failed");
+    page = results[0].value;
+    if (results[1].status === "fulfilled" && results[1].value.status === 200) robots = results[1].value.text;
+    if (results[2].status === "fulfilled" && results[2].value.status === 200) llms = results[2].value.text;
+    if (results[3].status === "fulfilled" && results[3].value.status === 200) sitemap = results[3].value.text;
+  } catch (e) {
+    return fail("Couldn't reach that site — it may be down or blocking visitors. Check the URL and try again.", 502);
+  }
+
+  if (page.status >= 400 || !page.text) {
+    return fail("That site returned an error (" + page.status + "). Check the URL and try again.", 502);
+  }
+
+  const signals = extractSignals(page.text, robots, llms, sitemap);
+  const site = u.host;
+
+  let result;
+  try {
+    result = await runModel(env, site, signals);
+  } catch (e) {
+    return fail("The read failed to come back. Give it a moment and try again.", 502);
+  }
+
+  if (!result || !Array.isArray(result.lenses) || !result.lenses.length) {
+    return fail("The read came back malformed. Try once more.", 502);
+  }
+
+  const out = {
+    site: site,
+    overall: result.overall,
+    lenses: result.lenses,
+    opportunities: result.opportunities || [],
+  };
+
+  await captureLead(env, context, {
+    email: email,
+    site: site,
+    url: u.href,
+    overall: out.overall,
+    lenses: out.lenses,
+    opportunities: out.opportunities,
+    at: new Date().toISOString(),
+  });
+
+  return json(out);
+}
+
+// Method-specific handlers take precedence; this catches everything else.
+export async function onRequest() {
+  return fail("POST a JSON body with url and email.", 405);
+}
