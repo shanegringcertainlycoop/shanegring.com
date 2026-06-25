@@ -68,32 +68,56 @@
     <div class="container">
       <a href="/" class="cs-back"><span class="btn-arrow">&larr;</span> Shane Gring</a>
 
-      <span class="section-eyebrow">Site Readiness Scan</span>
-      <h1 class="cs-hook">How ready is your site for AI?</h1>
+      <div class="sr-intro">
+        <div class="sr-intro-col">
+          <span class="section-eyebrow">Site Readiness Scan</span>
+          <h1 class="cs-hook">How ready is your site for AI?</h1>
 
-      <p class="om-lede">
-        Three things decide it. Whether AI can read your site and find you.
-        Whether the site can drive its own SEO and content. And whether it
-        could be a surface you build on &mdash; not a brochure you keep
-        patching. Enter a URL and I'll read yours.
-      </p>
+          <p class="om-lede">
+            Three things decide it. Whether AI can read your site and find
+            you. Whether the site can drive its own SEO and content. And
+            whether it could be a surface you build on &mdash; not a brochure
+            you keep patching. Enter a URL and I'll read yours.
+          </p>
 
-      <form class="sr-form" id="sr-form" aria-label="Run a site readiness scan">
-        <label class="sr-field">
-          <span class="contact-flabel">Your site</span>
-          <input type="url" id="sr-url" name="url" inputmode="url" autocomplete="url"
-                 placeholder="https://yourcompany.com" required>
-        </label>
-        <label class="sr-field">
-          <span class="contact-flabel">Email <em>(I'll send a copy)</em></span>
-          <input type="email" id="sr-email" name="email" autocomplete="email"
-                 placeholder="you@yourcompany.com" required>
-        </label>
-        <button type="submit" class="sr-submit" id="sr-submit">
-          Run the scan <span class="btn-arrow">&rarr;</span>
-        </button>
-        <p class="sr-note">Free. One read per site. Takes about half a minute.</p>
-      </form>
+          <form class="sr-form" id="sr-form" aria-label="Run a site readiness scan">
+            <label class="sr-field">
+              <span class="contact-flabel">Your site</span>
+              <input type="url" id="sr-url" name="url" inputmode="url" autocomplete="url"
+                     placeholder="https://yourcompany.com" required>
+            </label>
+            <label class="sr-field">
+              <span class="contact-flabel">Email <em>(I'll send a copy)</em></span>
+              <input type="email" id="sr-email" name="email" autocomplete="email"
+                     placeholder="you@yourcompany.com" required>
+            </label>
+            <button type="submit" class="sr-submit" id="sr-submit">
+              Run the scan <span class="btn-arrow">&rarr;</span>
+            </button>
+            <p class="sr-note">Free. One read per site. Takes about half a minute.</p>
+          </form>
+        </div>
+
+        <aside class="sr-hero-art" aria-hidden="true">
+          <div class="sr-hero-card">
+            <span class="sr-hero-card-eyebrow">Sample read</span>
+            <p class="sr-hero-card-site">yoursite.com</p>
+            <div class="sr-gauge sr-hero-gauge">
+              <svg class="sr-ring" width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="56" fill="none" stroke="var(--border)" stroke-width="7"/>
+                <circle cx="60" cy="60" r="56" fill="none" stroke="var(--fg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="98.52" transform="rotate(-90 60 60)"/>
+              </svg>
+              <span class="sr-gauge-num sr-hero-gauge-num">72</span>
+            </div>
+            <div class="sr-hero-rows">
+              <div class="sr-hero-row"><span class="sr-hero-row-label">Readable by AI</span><span class="sr-hero-track"><span style="width:82%"></span></span></div>
+              <div class="sr-hero-row"><span class="sr-hero-row-label">Self-driving SEO</span><span class="sr-hero-track"><span style="width:54%"></span></span></div>
+              <div class="sr-hero-row"><span class="sr-hero-row-label">Build surface</span><span class="sr-hero-track"><span style="width:64%"></span></span></div>
+              <div class="sr-hero-row"><span class="sr-hero-row-label">Opportunity</span><span class="sr-hero-track"><span style="width:73%"></span></span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
 
       <div class="sr-status" id="sr-status" role="status" aria-live="polite" hidden></div>
       <div class="sr-result" id="sr-result" aria-live="polite" hidden></div>
@@ -243,6 +267,8 @@
         '<a class="btn-primary" href="/operating-map">See the Operating Map <span class="btn-arrow">&rarr;</span></a>' +
       '</div>';
     resultEl.hidden = false;
+    var heroArt = document.querySelector('.sr-hero-art');
+    if (heroArt) heroArt.style.display = 'none';
     requestAnimationFrame(function () { resultEl.classList.add('sr-reveal'); });
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
