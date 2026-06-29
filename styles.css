@@ -905,6 +905,9 @@ img.about-portrait {
 
 .ity-close strong { color: var(--fg); font-weight: 600; }
 
+.approach-cta { margin-top: 1.5rem; }
+.approach-cta .btn-secondary { padding-left: 0; }
+
 /* ══════════════════════════════════════════════════════════════
    WORK CARDS (homepage)
    ══════════════════════════════════════════════════════════════ */
