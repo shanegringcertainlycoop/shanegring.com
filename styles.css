@@ -1194,6 +1194,12 @@ img.cs-screenshot {
   padding: 4.5rem 0 2.5rem;
 }
 
+/* Keep the back link on its own line, above the eyebrow. */
+.om-hero .cs-back {
+  display: flex;
+  width: fit-content;
+}
+
 img.om-hero-img {
   width: 100%;
   height: auto;
