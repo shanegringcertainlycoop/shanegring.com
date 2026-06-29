@@ -292,9 +292,16 @@ async function captureLead(env, ctx, payload) {
     }).catch(function () {}));
   }
   const notify = env.NOTIFY_EMAIL || DEFAULT_NOTIFY;
+  // FormSubmit's AJAX endpoint enforces an Origin/Referer check and silently
+  // refuses server-to-server posts without one — so we set them explicitly.
   tasks.push(fetch("https://formsubmit.co/ajax/" + encodeURIComponent(notify), {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Origin": "https://shanegring.com",
+      "Referer": "https://shanegring.com/scan",
+    },
     body: JSON.stringify({
       _subject: "Site Readiness Scan — " + payload.site,
       email: payload.email,
@@ -302,7 +309,13 @@ async function captureLead(env, ctx, payload) {
       overall: payload.overall,
       lenses: (payload.lenses || []).map(function (l) { return l.title + ": " + l.score; }).join(" | "),
     }),
-  }).catch(function () {}));
+  }).then(async function (r) {
+    // A 200 with {"success":"false"} (needs activation, etc.) is still a failure.
+    const body = await r.text().catch(function () { return ""; });
+    if (!r.ok || /"success"\s*:\s*"?false/i.test(body)) {
+      console.log("scan notify failed: " + r.status + " " + body.slice(0, 200));
+    }
+  }).catch(function (e) { console.log("scan notify error: " + e); }));
   const all = Promise.all(tasks);
   if (ctx && ctx.waitUntil) ctx.waitUntil(all); else await all;
 }
