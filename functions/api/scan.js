@@ -3,21 +3,21 @@
  *
  * Fetches a target URL, extracts machine-legibility / SEO / build signals,
  * sends them to Claude with a scoring rubric, returns structured JSON the
- * /scan page renders. Captures the lead to a Google Sheet + emails Shane.
+ * /scan page renders. Posts the lead + full result to a Google Apps Script
+ * web app (LEAD_SHEET_URL), which logs the row, emails Shane, and emails the
+ * visitor their copy.
  *
  * Required bindings (Cloudflare Pages → Settings):
  *   ANTHROPIC_API_KEY   secret    Anthropic API key (server-side only)
  *   SCAN_KV             KV        rate limiting + monthly cap counter
  * Optional:
- *   LEAD_SHEET_URL      var       Apps Script web-app URL (append-row)
- *   NOTIFY_EMAIL        var       email for the per-scan ping (default below)
+ *   LEAD_SHEET_URL      var       Apps Script web-app URL (logs row + sends emails)
  *   SCAN_MODEL          var       model id (default claude-sonnet-4-6)
  *   SCAN_MONTHLY_CAP    var       max scans/month (default 400)
  *   SCAN_IP_HOURLY      var       max scans/IP/hour (default 3)
  */
 
 const DEFAULT_MODEL = "claude-sonnet-4-6";
-const DEFAULT_NOTIFY = "shane.gring@gmail.com";
 const DEFAULT_MONTHLY_CAP = 400;
 const DEFAULT_IP_HOURLY = 3;
 const FETCH_TIMEOUT_MS = 9000;
@@ -281,63 +281,40 @@ async function runModel(env, site, signals) {
   return JSON.parse(textBlock.text);
 }
 
-// Best-effort lead capture. Returns a debug object when opts.debug is set,
-// otherwise runs in the background and never blocks the user's result.
+// Lead capture + notification. The Apps Script behind LEAD_SHEET_URL receives
+// the full scan payload and is responsible for: appending the lead row,
+// emailing Shane the result, and emailing the visitor their copy. Returns a
+// debug object when opts.debug is set; otherwise runs in the background and
+// never blocks the user's result.
 async function captureLead(env, ctx, payload, opts) {
   const debug = !!(opts && opts.debug);
-  const notify = env.NOTIFY_EMAIL || DEFAULT_NOTIFY;
-  let notifyResult = null;
 
-  // FormSubmit's AJAX endpoint enforces an Origin/Referer check; we set them
-  // explicitly (some runtimes strip these forbidden request headers).
-  const notifyTask = fetch("https://formsubmit.co/ajax/" + encodeURIComponent(notify), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      "Origin": "https://shanegring.com",
-      "Referer": "https://shanegring.com/scan",
-    },
-    body: JSON.stringify({
-      _subject: "Site Readiness Scan: " + payload.site,
-      email: payload.email,
-      site: payload.site,
-      overall: payload.overall,
-      lenses: (payload.lenses || []).map(function (l) { return l.title + ": " + l.score; }).join(" | "),
-    }),
-  }).then(async function (r) {
-    const body = await r.text().catch(function () { return ""; });
-    notifyResult = { status: r.status, ok: r.ok, body: body.slice(0, 300) };
-    // A 200 with {"success":"false"} (needs activation, etc.) is still a failure.
-    if (!r.ok || /"success"\s*:\s*"?false/i.test(body)) {
-      console.log("scan notify failed: " + r.status + " " + body.slice(0, 200));
-    }
-    return notifyResult;
-  }).catch(function (e) {
-    notifyResult = { error: String(e) };
-    console.log("scan notify error: " + e);
-    return notifyResult;
-  });
+  if (!env.LEAD_SHEET_URL) {
+    console.log("scan: LEAD_SHEET_URL not configured; lead not captured");
+    return debug ? { lead_sheet_configured: false } : null;
+  }
 
   let sheetResult = null;
-  const tasks = [notifyTask];
-  if (env.LEAD_SHEET_URL) {
-    tasks.push(fetch(env.LEAD_SHEET_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).then(async function (r) {
-      const b = await r.text().catch(function () { return ""; });
-      sheetResult = { status: r.status, ok: r.ok, body: b.slice(0, 200) };
-    }).catch(function (e) { sheetResult = { error: String(e) }; }));
-  }
+  const task = fetch(env.LEAD_SHEET_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).then(async function (r) {
+    const b = await r.text().catch(function () { return ""; });
+    sheetResult = { status: r.status, ok: r.ok, body: b.slice(0, 200) };
+    if (!r.ok) console.log("scan lead capture failed: " + r.status + " " + b.slice(0, 200));
+    return sheetResult;
+  }).catch(function (e) {
+    sheetResult = { error: String(e) };
+    console.log("scan lead capture error: " + e);
+    return sheetResult;
+  });
 
   if (debug) {
-    await Promise.all(tasks);
-    return { notify_email: notify, notify_result: notifyResult, lead_sheet_configured: !!env.LEAD_SHEET_URL, lead_sheet_result: sheetResult };
+    await task;
+    return { lead_sheet_configured: true, lead_sheet_result: sheetResult };
   }
-  const all = Promise.all(tasks);
-  if (ctx && ctx.waitUntil) ctx.waitUntil(all); else await all;
+  if (ctx && ctx.waitUntil) ctx.waitUntil(task); else await task;
   return null;
 }
 
