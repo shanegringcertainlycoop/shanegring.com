@@ -319,18 +319,22 @@ async function captureLead(env, ctx, payload, opts) {
     return notifyResult;
   });
 
+  let sheetResult = null;
   const tasks = [notifyTask];
   if (env.LEAD_SHEET_URL) {
     tasks.push(fetch(env.LEAD_SHEET_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    }).catch(function () {}));
+    }).then(async function (r) {
+      const b = await r.text().catch(function () { return ""; });
+      sheetResult = { status: r.status, ok: r.ok, body: b.slice(0, 200) };
+    }).catch(function (e) { sheetResult = { error: String(e) }; }));
   }
 
   if (debug) {
     await Promise.all(tasks);
-    return { notify_email: notify, notify_result: notifyResult, lead_sheet_configured: !!env.LEAD_SHEET_URL };
+    return { notify_email: notify, notify_result: notifyResult, lead_sheet_configured: !!env.LEAD_SHEET_URL, lead_sheet_result: sheetResult };
   }
   const all = Promise.all(tasks);
   if (ctx && ctx.waitUntil) ctx.waitUntil(all); else await all;
