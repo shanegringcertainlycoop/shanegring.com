@@ -281,20 +281,16 @@ async function runModel(env, site, signals) {
   return JSON.parse(textBlock.text);
 }
 
-// Best-effort lead capture — never blocks the user's result.
-async function captureLead(env, ctx, payload) {
-  const tasks = [];
-  if (env.LEAD_SHEET_URL) {
-    tasks.push(fetch(env.LEAD_SHEET_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch(function () {}));
-  }
+// Best-effort lead capture. Returns a debug object when opts.debug is set,
+// otherwise runs in the background and never blocks the user's result.
+async function captureLead(env, ctx, payload, opts) {
+  const debug = !!(opts && opts.debug);
   const notify = env.NOTIFY_EMAIL || DEFAULT_NOTIFY;
-  // FormSubmit's AJAX endpoint enforces an Origin/Referer check and silently
-  // refuses server-to-server posts without one — so we set them explicitly.
-  tasks.push(fetch("https://formsubmit.co/ajax/" + encodeURIComponent(notify), {
+  let notifyResult = null;
+
+  // FormSubmit's AJAX endpoint enforces an Origin/Referer check; we set them
+  // explicitly (some runtimes strip these forbidden request headers).
+  const notifyTask = fetch("https://formsubmit.co/ajax/" + encodeURIComponent(notify), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -303,21 +299,42 @@ async function captureLead(env, ctx, payload) {
       "Referer": "https://shanegring.com/scan",
     },
     body: JSON.stringify({
-      _subject: "Site Readiness Scan — " + payload.site,
+      _subject: "Site Readiness Scan: " + payload.site,
       email: payload.email,
       site: payload.site,
       overall: payload.overall,
       lenses: (payload.lenses || []).map(function (l) { return l.title + ": " + l.score; }).join(" | "),
     }),
   }).then(async function (r) {
-    // A 200 with {"success":"false"} (needs activation, etc.) is still a failure.
     const body = await r.text().catch(function () { return ""; });
+    notifyResult = { status: r.status, ok: r.ok, body: body.slice(0, 300) };
+    // A 200 with {"success":"false"} (needs activation, etc.) is still a failure.
     if (!r.ok || /"success"\s*:\s*"?false/i.test(body)) {
       console.log("scan notify failed: " + r.status + " " + body.slice(0, 200));
     }
-  }).catch(function (e) { console.log("scan notify error: " + e); }));
+    return notifyResult;
+  }).catch(function (e) {
+    notifyResult = { error: String(e) };
+    console.log("scan notify error: " + e);
+    return notifyResult;
+  });
+
+  const tasks = [notifyTask];
+  if (env.LEAD_SHEET_URL) {
+    tasks.push(fetch(env.LEAD_SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch(function () {}));
+  }
+
+  if (debug) {
+    await Promise.all(tasks);
+    return { notify_email: notify, notify_result: notifyResult, lead_sheet_configured: !!env.LEAD_SHEET_URL };
+  }
   const all = Promise.all(tasks);
   if (ctx && ctx.waitUntil) ctx.waitUntil(all); else await all;
+  return null;
 }
 
 async function checkAndCount(env, ip) {
@@ -412,7 +429,8 @@ export async function onRequestPost(context) {
     opportunities: result.opportunities || [],
   };
 
-  await captureLead(env, context, {
+  const debug = !!(payload && payload.debug === true);
+  const dbg = await captureLead(env, context, {
     email: email,
     site: site,
     url: u.href,
@@ -420,7 +438,8 @@ export async function onRequestPost(context) {
     lenses: out.lenses,
     opportunities: out.opportunities,
     at: new Date().toISOString(),
-  });
+  }, { debug: debug });
+  if (debug && dbg) out._debug = dbg;
 
   return json(out);
 }
