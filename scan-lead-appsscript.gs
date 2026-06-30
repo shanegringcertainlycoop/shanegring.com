@@ -1,85 +1,74 @@
 /**
  * Site Readiness Scan: lead capture + email (Google Apps Script).
  *
- * This is the web app behind the Cloudflare var LEAD_SHEET_URL. The scan
- * Worker POSTs it the full result as JSON:
+ * Container-bound to the "Leads from AI scan" Sheet (owned by
+ * shane.gring@certainly.coop), deployed as a Web App whose /exec URL is the
+ * Cloudflare var LEAD_SHEET_URL. The scan Worker POSTs the full result:
  *   { email, site, url, overall,
  *     lenses:[{title,score,read}], opportunities:[{title,detail}], at }
  *
- * It does three things: log the lead row, email Shane, and email the visitor
- * their copy (the "a copy lands in your inbox" promise on /scan).
+ * doPost: (1) appends the lead row, (2) emails Shane, (3) emails the visitor
+ * their copy. The appendRow matches the existing sheet columns exactly
+ * (at | email | site | overall | lenses | opportunities) so existing data
+ * stays consistent.
  *
- * SETUP
- *   1. Open the Sheet -> Extensions -> Apps Script.
- *   2. Paste this in (replace the existing doPost), save.
- *   3. Deploy -> Manage deployments -> edit the existing Web app deployment
- *      (or New deployment -> Web app):
- *        Execute as: Me
- *        Who has access: Anyone
- *      Deploy, copy the /exec URL.
- *   4. If the URL changed, update LEAD_SHEET_URL in Cloudflare Pages settings.
- *   5. Run doPost once from the editor to trigger the Gmail permission prompt,
- *      then approve it.
+ * DEPLOY: paste over the existing doPost, Save, then
+ *   Deploy -> Manage deployments -> edit the existing deployment ->
+ *   Version: New version -> Deploy. Approve the Gmail authorization prompt
+ *   (choose the coop account; if you see "unverified app", Advanced -> Allow).
+ *   Editing the existing deployment keeps the same /exec URL, so Cloudflare
+ *   needs no change.
  */
 
-var NOTIFY_TO = 'shane.gring@certainly.coop';   // where your own notification goes
+var NOTIFY_TO = 'shane.gring@certainly.coop';
 var FROM_NAME = 'Shane Gring';
 
 function doPost(e) {
-  try {
-    var data = JSON.parse(e.postData.contents);
+  var d = JSON.parse(e.postData.contents);
 
-    // 1) Log the lead row.
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Timestamp', 'Email', 'Site', 'URL', 'Overall', 'Lenses']);
-    }
-    var lensSummary = (data.lenses || [])
-      .map(function (l) { return l.title + ': ' + l.score; }).join(' | ');
-    sheet.appendRow([
-      data.at || new Date().toISOString(),
-      data.email || '',
-      data.site || '',
-      data.url || '',
-      data.overall || '',
-      lensSummary
-    ]);
+  // 1) Log the lead (matches existing sheet columns).
+  var s = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  s.appendRow([
+    d.at,
+    d.email,
+    d.site,
+    d.overall,
+    (d.lenses || []).map(function (l) { return l.title + ': ' + l.score; }).join(' | '),
+    (d.opportunities || []).map(function (o) { return o.title; }).join(' | ')
+  ]);
 
-    // Shared text blocks.
-    var lensBlock = (data.lenses || []).map(function (l) {
-      return l.title + ' (' + l.score + '/100)\n' + (l.read || '');
-    }).join('\n\n');
-    var oppBlock = (data.opportunities || []).map(function (o) {
-      return '> ' + o.title + '\n' + (o.detail || '');
-    }).join('\n\n');
+  // Shared email text.
+  var lensBlock = (d.lenses || []).map(function (l) {
+    return l.title + ' (' + l.score + '/100)\n' + (l.read || '');
+  }).join('\n\n');
+  var oppBlock = (d.opportunities || []).map(function (o) {
+    return '> ' + o.title + '\n' + (o.detail || '');
+  }).join('\n\n');
 
-    // 2) Notify Shane.
+  // 2) Notify Shane.
+  MailApp.sendEmail({
+    to: NOTIFY_TO,
+    subject: 'New scan: ' + d.site + ' (' + d.overall + '/100) from ' + d.email,
+    body: 'Lead: ' + d.email + '\nSite: ' + (d.url || d.site)
+        + '\nOverall: ' + d.overall + '/100\n\n'
+        + lensBlock + '\n\nWhere I would start:\n\n' + oppBlock
+  });
+
+  // 3) Send the visitor their copy.
+  if (d.email) {
     MailApp.sendEmail({
-      to: NOTIFY_TO,
-      subject: 'New scan: ' + data.site + ' (' + data.overall + '/100) from ' + data.email,
-      body: 'Lead: ' + data.email + '\nSite: ' + data.url
-          + '\nOverall: ' + data.overall + '/100\n\n'
+      to: d.email,
+      name: FROM_NAME,
+      replyTo: NOTIFY_TO,
+      subject: 'Your Site Readiness Scan: ' + d.site,
+      body: 'Thanks for running the Site Readiness Scan on ' + (d.url || d.site) + '.\n\n'
+          + 'Overall readiness: ' + d.overall + '/100\n\n'
           + lensBlock + '\n\nWhere I would start:\n\n' + oppBlock
+          + '\n\nWant the detailed version, the moves I would make and in what order? '
+          + 'Just reply to this email.\n\n'
+          + FROM_NAME + '\nhttps://shanegring.com'
     });
-
-    // 3) Send the visitor their copy.
-    if (data.email) {
-      MailApp.sendEmail({
-        to: data.email,
-        name: FROM_NAME,
-        replyTo: NOTIFY_TO,
-        subject: 'Your Site Readiness Scan: ' + data.site,
-        body: 'Thanks for running the Site Readiness Scan on ' + data.url + '.\n\n'
-            + 'Overall readiness: ' + data.overall + '/100\n\n'
-            + lensBlock + '\n\nWhere I would start:\n\n' + oppBlock
-            + '\n\nWant the detailed version, the moves I would make and in what order? '
-            + 'Just reply to this email.\n\n'
-            + FROM_NAME + '\nhttps://shanegring.com'
-      });
-    }
-
-    return ContentService.createTextOutput('ok');
-  } catch (err) {
-    return ContentService.createTextOutput('error: ' + err);
   }
+
+  return ContentService.createTextOutput('ok');
 }
