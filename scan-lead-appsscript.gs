@@ -22,7 +22,7 @@
  *      then approve it.
  */
 
-var NOTIFY_TO = 'shane.gring@gmail.com';   // where your own notification goes
+var NOTIFY_TO = 'shane.gring@certainly.coop';   // where your own notification goes
 var FROM_NAME = 'Shane Gring';
 
 function doPost(e) {
