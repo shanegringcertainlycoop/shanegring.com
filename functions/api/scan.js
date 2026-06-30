@@ -283,39 +283,26 @@ async function runModel(env, site, signals) {
 
 // Lead capture + notification. The Apps Script behind LEAD_SHEET_URL receives
 // the full scan payload and is responsible for: appending the lead row,
-// emailing Shane the result, and emailing the visitor their copy. Returns a
-// debug object when opts.debug is set; otherwise runs in the background and
-// never blocks the user's result.
-async function captureLead(env, ctx, payload, opts) {
-  const debug = !!(opts && opts.debug);
-
+// emailing Shane the result, and emailing the visitor their copy. Best-effort;
+// runs in the background and never blocks the user's result.
+async function captureLead(env, ctx, payload) {
   if (!env.LEAD_SHEET_URL) {
     console.log("scan: LEAD_SHEET_URL not configured; lead not captured");
-    return debug ? { lead_sheet_configured: false } : null;
+    return;
   }
 
-  let sheetResult = null;
   const task = fetch(env.LEAD_SHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   }).then(async function (r) {
-    const b = await r.text().catch(function () { return ""; });
-    sheetResult = { status: r.status, ok: r.ok, body: b.slice(0, 200) };
-    if (!r.ok) console.log("scan lead capture failed: " + r.status + " " + b.slice(0, 200));
-    return sheetResult;
-  }).catch(function (e) {
-    sheetResult = { error: String(e) };
-    console.log("scan lead capture error: " + e);
-    return sheetResult;
-  });
+    if (!r.ok) {
+      const b = await r.text().catch(function () { return ""; });
+      console.log("scan lead capture failed: " + r.status + " " + b.slice(0, 200));
+    }
+  }).catch(function (e) { console.log("scan lead capture error: " + e); });
 
-  if (debug) {
-    await task;
-    return { lead_sheet_configured: true, lead_sheet_result: sheetResult };
-  }
   if (ctx && ctx.waitUntil) ctx.waitUntil(task); else await task;
-  return null;
 }
 
 async function checkAndCount(env, ip) {
@@ -410,8 +397,7 @@ export async function onRequestPost(context) {
     opportunities: result.opportunities || [],
   };
 
-  const debug = !!(payload && payload.debug === true);
-  const dbg = await captureLead(env, context, {
+  await captureLead(env, context, {
     email: email,
     site: site,
     url: u.href,
@@ -419,8 +405,7 @@ export async function onRequestPost(context) {
     lenses: out.lenses,
     opportunities: out.opportunities,
     at: new Date().toISOString(),
-  }, { debug: debug });
-  if (debug && dbg) out._debug = dbg;
+  });
 
   return json(out);
 }
