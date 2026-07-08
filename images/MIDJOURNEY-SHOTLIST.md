@@ -73,11 +73,41 @@ pan left/right to extend the strip, or upscale and crop a horizontal band.
 
 ---
 
-## Icons (NOT Midjourney)
+## 7. `/scan` — the Scan hero ✅ DONE (`scan-hero.png`, 2026-07-08)
 
-The four missing path icons (scan, read, site, partner) should be hand-coded 16×16
-SVG rects to match `images/icons/map.svg` — Midjourney can't hold a true 16px grid.
-Blues family (#4a90e2 → #6bb6ff) with darker accent rows, `image-rendering: pixelated`.
-Concepts: scan = gauge/radar sweep, read = open memo with play triangle,
-site = three stacked components locking together, partner = two interlocked blocks
-or a calendar with one filled slot.
+**Idea to carry:** a beam sweeping the city, lighting up what machines can see —
+some of it lit, some in shadow.
+
+> a lighthouse on a rocky point at the edge of a harbor city at dusk, its bright
+> beam sweeping across the water and lighting up a slice of the buildings on the
+> far shore, the lit buildings glowing warm while the rest sit in blue shadow,
+> small boats on the water, [style suffix] --ar 16:9
+
+Placement: below the scan intro (the CSS gauge card on the right stays — it's
+replaced by live results when a scan runs).
+
+## 6. Path icons — all five stages (Midjourney set)
+
+Generate all five together so the set matches (the hand-coded `icons/map.svg` gets
+replaced too). MJ returns 1024px squares, not true 16px grids — Claude downscales
+nearest-neighbor to the 56px slots and cleans backgrounds on delivery.
+
+**Shared suffix:**
+
+```
+simple pixel art icon, chunky 16x16-style pixel sprite, thick blocky pixels, flat
+cobalt blue and sky blue palette (#4a90e2, #5ba3f5, #6bb6ff) on a plain white
+background, single centered object, retro videogame inventory icon, no text,
+no border --ar 1:1 --stylize 50
+```
+
+Objects (each echoes its page's hero scene):
+
+1. Scan — `a radar dial gauge with a sweeping needle,`
+2. Read — `a clipboard with a magnifying glass over it,`
+3. Map — `a folded transit map with route lines,`
+4. Site — `a crane hook lifting a small building block,`
+5. Partner — `a split-flap departure board tile mid-flip,`
+
+Tips: generate all five in one session; reroll drifters with `--seed` from the best
+job; `--stylize 50` keeps MJ literal instead of illustrative.

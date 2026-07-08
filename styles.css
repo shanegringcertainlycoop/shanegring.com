@@ -2138,6 +2138,17 @@ footer {
   }
 }
 
+/* Small inline pixel mark before a path item's title (work-with-me) */
+.path-mark {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  vertical-align: -8px;
+  margin-right: 0.4rem;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 /* Full-bleed pixel city panorama; the footer background picks up
    where its water leaves off. */
 .footer-city {
