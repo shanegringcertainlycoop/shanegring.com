@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="224" height="80" viewBox="0 0 224 80" shape-rendering="crispEdges">
+  <!-- Soft pixel cumulus: 8px cells, palette pulled from the hero art clouds -->
+  <!-- top highlights -->
+  <rect x="80" y="0" width="32" height="8" fill="#f7fafc"/>
+  <rect x="64" y="8" width="64" height="8" fill="#f4f8fb"/>
+  <rect x="144" y="8" width="32" height="8" fill="#f4f8fb"/>
+  <rect x="40" y="16" width="16" height="8" fill="#f4f8fb"/>
+  <!-- body -->
+  <rect x="56" y="16" width="88" height="8" fill="#eaf1f7"/>
+  <rect x="136" y="16" width="56" height="8" fill="#eaf1f7"/>
+  <rect x="32" y="24" width="168" height="8" fill="#eaf1f7"/>
+  <rect x="200" y="24" width="8" height="8" fill="#f4f8fb"/>
+  <rect x="16" y="32" width="192" height="8" fill="#e6eef5"/>
+  <rect x="8" y="40" width="208" height="8" fill="#e6eef5"/>
+  <rect x="0" y="48" width="224" height="8" fill="#e2ebf3"/>
+  <!-- shaded underside -->
+  <rect x="0" y="56" width="224" height="8" fill="#d9e4ee"/>
+  <rect x="16" y="64" width="184" height="8" fill="#d2dfe9"/>
+  <rect x="48" y="72" width="120" height="8" fill="#ccd9e5"/>
+</svg>

@@ -168,6 +168,23 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   font-family: inherit;
 }
 
+.site-nav {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.site-nav .logo {
+  line-height: 1.2;
+  padding: 0.375rem 0;
+  margin: 0;
+}
+
+.site-nav ul {
+  margin: 0;
+  padding: 0;
+}
+
 /* ══════════════════════════════════════════════════════════════
    SECTION ATOMS
    ══════════════════════════════════════════════════════════════ */
@@ -196,6 +213,123 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
    ══════════════════════════════════════════════════════════════ */
 .hero {
   padding: 5.5rem 0 5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Soft pixel clouds drifting slowly across the hero, left to right.
+   Negative delays start them mid-sky on load. */
+.hero-cloud {
+  position: absolute;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  height: auto;
+  animation: cloud-cross linear infinite;
+}
+
+.hero-cloud-1 {
+  top: 1.75rem;
+  width: 264px;
+  animation-duration: 150s;
+  animation-delay: -85s;
+}
+
+.hero-cloud-2 {
+  top: 11.5rem;
+  width: 176px;
+  animation-duration: 110s;
+  animation-delay: -30s;
+}
+
+/* Smaller = farther away: lighter and slower */
+.hero-cloud-3 {
+  top: 5.5rem;
+  width: 112px;
+  opacity: 0.8;
+  animation-duration: 200s;
+  animation-delay: -140s;
+}
+
+.hero-cloud-4 {
+  top: 19rem;
+  width: 200px;
+  animation-duration: 125s;
+  animation-delay: -95s;
+}
+
+.hero-cloud-5 {
+  top: 15rem;
+  width: 88px;
+  opacity: 0.7;
+  animation-duration: 230s;
+  animation-delay: -50s;
+}
+
+.hero-cloud-6 {
+  top: 8.5rem;
+  width: 148px;
+  opacity: 0.85;
+  animation-duration: 175s;
+  animation-delay: -160s;
+}
+
+.hero-cloud-7 {
+  top: 3rem;
+  width: 72px;
+  opacity: 0.65;
+  animation-duration: 260s;
+  animation-delay: -105s;
+}
+
+.hero-cloud-8 {
+  top: 23rem;
+  width: 132px;
+  opacity: 0.8;
+  animation-duration: 155s;
+  animation-delay: -20s;
+}
+
+.hero-cloud-9 {
+  top: 17.5rem;
+  width: 104px;
+  opacity: 0.7;
+  animation-duration: 215s;
+  animation-delay: -185s;
+}
+
+@keyframes cloud-cross {
+  from { transform: translateX(-280px); }
+  to   { transform: translateX(100vw); }
+}
+
+@media (max-width: 880px) {
+  .hero-cloud-1 { width: 200px; }
+  .hero-cloud-2,
+  .hero-cloud-4,
+  .hero-cloud-6,
+  .hero-cloud-8 { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cloud { animation: none; }
+  .hero-cloud-1 { transform: translateX(64vw); }
+  .hero-cloud-2 { transform: translateX(12vw); }
+  .hero-cloud-3 { transform: translateX(38vw); }
+  .hero-cloud-4 { transform: translateX(74vw); }
+  .hero-cloud-5 { transform: translateX(22vw); }
+  .hero-cloud-6 { transform: translateX(48vw); }
+  .hero-cloud-7 { transform: translateX(84vw); }
+  .hero-cloud-8 { transform: translateX(30vw); }
+  .hero-cloud-9 { transform: translateX(58vw); }
 }
 
 /* Above the collapse breakpoint, the hero breaks out wider than the rest of
@@ -1989,13 +2123,38 @@ img.shape-icon {
    FOOTER
    ══════════════════════════════════════════════════════════════ */
 footer {
-  border-top: 1px solid var(--border);
-  padding: 3rem 0 2.5rem;
+  padding: 0 0 2.5rem;
+  /* Continues the water at the bottom edge of the city strip */
+  background: #2b5d64;
+  /* Fade the top edge of the city strip into the page instead of a hard line */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 120px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 120px);
+}
+
+@media (max-width: 600px) {
+  footer {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 64px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 64px);
+  }
+}
+
+/* Full-bleed pixel city panorama; the footer background picks up
+   where its water leaves off. */
+.footer-city {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+footer .container {
+  padding-top: 2.75rem;
 }
 
 .footer-tag {
   font-size: 1.05rem;
-  color: var(--mid);
+  color: rgba(255, 255, 255, 0.92);
   font-weight: 500;
   margin-bottom: 1.5rem;
   max-width: 720px;
@@ -2008,7 +2167,7 @@ footer {
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.85rem;
-  color: var(--dim);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .footer-link {
@@ -2020,7 +2179,7 @@ footer {
   transition: color 0.15s ease;
 }
 
-.footer-link:hover { color: var(--fg); }
+.footer-link:hover { color: #ffffff; }
 
 /* ══════════════════════════════════════════════════════════════
    ANIMATIONS (minimal — fade on enter only)

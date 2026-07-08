@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="48" viewBox="0 0 160 48" shape-rendering="crispEdges">
+  <!-- Smaller, flatter drifting cloud: 8px cells -->
+  <rect x="48" y="0" width="40" height="8" fill="#f6f9fc"/>
+  <rect x="104" y="8" width="24" height="8" fill="#f4f8fb"/>
+  <rect x="32" y="8" width="72" height="8" fill="#eaf1f7"/>
+  <rect x="16" y="16" width="128" height="8" fill="#e6eef5"/>
+  <rect x="0" y="24" width="160" height="8" fill="#e2ebf3"/>
+  <!-- shaded underside -->
+  <rect x="8" y="32" width="144" height="8" fill="#d7e2ec"/>
+  <rect x="32" y="40" width="96" height="8" fill="#cfdce7"/>
+</svg>

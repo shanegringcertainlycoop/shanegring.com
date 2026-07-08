@@ -63,10 +63,23 @@
 
 <body>
 
+<nav class="site-nav" aria-label="Site">
+  <div class="container">
+    <a class="logo" href="/">Shane Gring</a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" onclick="var m=document.getElementById('nav-menu');this.setAttribute('aria-expanded',m.classList.toggle('open'))">&#9776;</button>
+    <ul id="nav-menu">
+      <li><a href="/work-with-me">Work with me</a></li>
+      <li><a href="/approach.html">Approach</a></li>
+      <li><a href="/#work">Recent work</a></li>
+      <li><a href="/#contact">Contact</a></li>
+      <li><a class="nav-cta" href="/scan">Run the free Scan</a></li>
+    </ul>
+  </div>
+</nav>
+
 <main>
   <section class="om-hero">
     <div class="container">
-      <a href="/" class="cs-back"><span class="btn-arrow">&larr;</span> Shane Gring</a>
 
       <div class="sr-intro">
         <div class="sr-intro-col">
@@ -177,6 +190,7 @@
 </main>
 
 <footer>
+  <img class="footer-city" src="/images/footer-city.png" alt="" width="2176" height="544" loading="lazy" aria-hidden="true">
   <div class="container">
     <p class="footer-tag">Operations that run beyond you.</p>
     <div class="footer-content">
@@ -263,8 +277,8 @@
       '<div class="sr-lenses">' + lenses + '</div>' +
       (opps ? '<div class="sr-opps"><span class="section-eyebrow">Where I’d start</span>' + opps + '</div>' : '') +
       '<div class="sr-cta">' +
-        '<p>Want the detailed version: what I’d actually do, in order? That’s the Operating Map.</p>' +
-        '<a class="btn-primary" href="/operating-map">See the Operating Map <span class="btn-arrow">&rarr;</span></a>' +
+        '<p>Want my eyes on it instead of a machine’s? The Read: a recorded walkthrough of your site and a ranked memo of fixes, in 5 business days.</p>' +
+        '<a class="btn-primary" href="/read">Get your Read <span class="btn-arrow">&rarr;</span></a>' +
       '</div>';
     resultEl.hidden = false;
     var heroArt = document.querySelector('.sr-hero-art');

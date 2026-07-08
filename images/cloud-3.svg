@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="40" viewBox="0 0 96 40" shape-rendering="crispEdges">
+  <!-- Small distant puff: 8px cells -->
+  <rect x="32" y="0" width="24" height="8" fill="#f6f9fc"/>
+  <rect x="16" y="8" width="56" height="8" fill="#eaf1f7"/>
+  <rect x="64" y="8" width="16" height="8" fill="#f4f8fb"/>
+  <rect x="8" y="16" width="80" height="8" fill="#e6eef5"/>
+  <rect x="0" y="24" width="96" height="8" fill="#e2ebf3"/>
+  <!-- shaded underside -->
+  <rect x="16" y="32" width="64" height="8" fill="#d7e2ec"/>
+</svg>
