@@ -86,7 +86,24 @@ some of it lit, some in shadow.
 Placement: below the scan intro (the CSS gauge card on the right stays — it's
 replaced by live results when a scan runs).
 
-## 6. Path icons — all five stages (Midjourney set)
+## 8. `/approach` — the centralizing layer
+
+**Idea to carry:** the hub the whole city runs through — every line converges into it.
+
+> a grand central railway station at the heart of a city seen from a high vantage
+> point in morning light, many train lines converging into it from every direction,
+> trains arriving and departing, the glass-roofed station hall glowing warm, the
+> city's streets and buildings radiating outward around it, people flowing toward
+> the entrances, [style suffix] --ar 21:9
+
+Placement: likely below the "Looked at vs. run from" section; the existing
+approach-hero.svg diagram stays in the hero (it labels what radiates from the
+site — real explanatory content). Fall back to --ar 16:9 + crop if 21:9 is mushy.
+
+## 6. Path icons — all five stages ✅ v2 DONE (`icons/*.png`, 2026-07-09)
+(v1 had too much variance. v2: flat front-facing enforced, one color per rung —
+Scan teal, Read sky blue, Map cobalt, Site warm orange, Partner brick red. The
+ramp runs cool diagnostics → warm build/run, matching the ladder.)
 
 Generate all five together so the set matches (the hand-coded `icons/map.svg` gets
 replaced too). MJ returns 1024px squares, not true 16px grids — Claude downscales
