@@ -66,7 +66,7 @@ function doPost(e) {
           + lensBlock + '\n\nWhere I would start:\n\n' + oppBlock
           + '\n\nThat is the machine version. If you want my eyes on it, '
           + 'that is the Read: a recorded walkthrough of your site and a ranked '
-          + 'memo of fixes, in 5 business days, for $450. '
+          + 'memo of fixes, in 5 business days. '
           + 'https://shanegring.com/read\n\n'
           + 'Or just reply to this email.\n\n'
           + FROM_NAME + '\nhttps://shanegring.com'

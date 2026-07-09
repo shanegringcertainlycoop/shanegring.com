@@ -86,7 +86,7 @@ some of it lit, some in shadow.
 Placement: below the scan intro (the CSS gauge card on the right stays — it's
 replaced by live results when a scan runs).
 
-## 8. `/approach` — the centralizing layer
+## 8. `/approach` — the centralizing layer ✅ DONE (`approach-station.png`, 2026-07-09)
 
 **Idea to carry:** the hub the whole city runs through — every line converges into it.
 
