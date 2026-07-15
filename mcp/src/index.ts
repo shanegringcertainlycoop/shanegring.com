@@ -216,6 +216,14 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/mcp" || url.pathname.startsWith("/mcp/")) {
+      // A human clicking the link in a browser gets the explainer;
+      // MCP clients GET with Accept: text/event-stream and pass through.
+      const accept = request.headers.get("Accept") || "";
+      if (request.method === "GET" && !accept.includes("text/event-stream")) {
+        return new Response(LANDING, {
+          headers: { "Content-Type": "text/plain; charset=utf-8" },
+        });
+      }
       return ShaneGringMCP.serve("/mcp", { binding: "SHANE_MCP" }).fetch(request, env, ctx);
     }
 
