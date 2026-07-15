@@ -2899,6 +2899,16 @@ footer .container {
   margin: 0;
   max-width: 60ch;
 }
+.sr-opp-guide {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+.sr-opp-guide:hover { border-bottom-color: var(--fg); }
 
 /* CTA — inverted closing beat */
 .sr-cta {

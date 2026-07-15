@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WHSTF58T');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Should you block AI crawlers? What robots.txt and llms.txt decide | Shane Gring</title>
+<meta name="description" content="Blocking AI crawlers is a real decision with a real trade. Who should block, who shouldn't, what robots.txt actually controls, and what llms.txt gives the machines you let in.">
+<meta name="author" content="Shane Gring">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://shanegring.com/guides/should-i-block-ai-crawlers">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Should you block AI crawlers? What robots.txt and llms.txt decide">
+<meta property="og:description" content="Blocking AI crawlers is a real decision with a real trade. Who should block, who shouldn't, and what llms.txt gives the machines you let in.">
+<meta property="og:url" content="https://shanegring.com/guides/should-i-block-ai-crawlers">
+<meta property="og:site_name" content="Shane Gring">
+<meta property="og:image" content="https://shanegring.com/og-social.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Should you block AI crawlers? What robots.txt and llms.txt decide">
+<meta name="twitter:description" content="Who should block AI crawlers, who shouldn't, and what llms.txt gives the machines you let in.">
+<meta name="twitter:image" content="https://shanegring.com/og-social.png">
+
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Article","@id":"https://shanegring.com/guides/should-i-block-ai-crawlers#article","headline":"Should you block AI crawlers? What robots.txt and llms.txt actually decide","description":"The honest trade behind blocking AI crawlers, how robots.txt directives work, the accidental blocks that hide businesses from AI, and what llms.txt is for.","author":{"@id":"https://shanegring.com/#person"},"publisher":{"@id":"https://shanegring.com/#person"},"mainEntityOfPage":"https://shanegring.com/guides/should-i-block-ai-crawlers","image":"https://shanegring.com/og-social.png"},
+{"@type":"FAQPage","@id":"https://shanegring.com/guides/should-i-block-ai-crawlers#faq","mainEntity":[
+{"@type":"Question","name":"Should a service business block AI crawlers?","acceptedAnswer":{"@type":"Answer","text":"Usually no. If your content is marketing for expertise you sell as services, AI engines reading your site are briefing your next buyer. Blocking them removes you from answers your competitors stay in. Blocking makes more sense when the content itself is the paid product."}},
+{"@type":"Question","name":"Which AI crawlers matter in robots.txt?","acceptedAnswer":{"@type":"Answer","text":"The main named agents are GPTBot (OpenAI), ClaudeBot and anthropic-ai (Anthropic), PerplexityBot, and Google-Extended, which controls whether Google may use your content for AI training and features. Each can be allowed or disallowed individually."}},
+{"@type":"Question","name":"What is llms.txt and do I need one?","acceptedAnswer":{"@type":"Answer","text":"llms.txt is a plain-text file at yoursite.com/llms.txt that gives AI systems a clean, current summary of the business — who you are, what you sell, prices, where to read more. If you allow AI crawlers at all, it's the cheapest visibility improvement available: you write the machine's briefing instead of hoping it assembles one."}},
+{"@type":"Question","name":"How do I know if I'm accidentally blocking AI crawlers?","acceptedAnswer":{"@type":"Answer","text":"Open yoursite.com/robots.txt and read it. A blanket 'User-agent: * / Disallow: /' or a copied blocklist naming GPTBot and ClaudeBot means AI engines are locked out — often from a template or security plugin nobody remembers configuring."}}]},
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shanegring.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://shanegring.com/guides/"},{"@type":"ListItem","position":3,"name":"Should you block AI crawlers?","item":"https://shanegring.com/guides/should-i-block-ai-crawlers"}]}]}
+</script>
+</head>
+
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WHSTF58T"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!--
+  DRAFT — target query: "should I block AI crawlers" / "what is llms.txt" / "robots.txt GPTBot"
+  Suggested URL: /guides/should-i-block-ai-crawlers
+  Path step it feeds: The Scan (free)
+-->
+
+<a class="announce-bar" href="/work-with-me">
+  <span class="announce-tag">New</span>
+  <span class="announce-text">The Modern Operations Path&trade;: five steps, enter where you are</span>
+  <span class="announce-arrow btn-arrow">&rarr;</span>
+</a>
+
+<nav class="site-nav" aria-label="Site">
+  <div class="container">
+    <a class="logo" href="/" aria-label="Shane Gring, home"><img class="logo-cloud" src="/images/cloud-1.svg" alt="Shane Gring" width="224" height="80"><img class="logo-bolt" src="/images/cloud-bolt.svg" alt="" width="32" height="48" aria-hidden="true"></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" onclick="var m=document.getElementById('nav-menu');this.setAttribute('aria-expanded',m.classList.toggle('open'))">&#9776;</button>
+    <ul id="nav-menu">
+      <li class="nav-drop">
+        <a href="/work-with-me">Work with me <span class="nav-caret">&#9662;</span></a>
+        <ul class="nav-dropdown">
+          <li class="nav-drop-label">The Modern Operations Path™</li>
+          <li><a href="/scan"><img class="nav-drop-icon" src="/images/icons/scan.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Scan</span><span class="nav-drop-desc">A free scored read of your site, in two minutes</span></span></a></li>
+          <li><a href="/read"><img class="nav-drop-icon" src="/images/icons/read.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Read</span><span class="nav-drop-desc">My eyes on your site: video walkthrough and ranked memo</span></span></a></li>
+          <li><a href="/operating-map.html"><img class="nav-drop-icon" src="/images/icons/map.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Map</span><span class="nav-drop-desc">Your business extracted and put on paper, in three weeks</span></span></a></li>
+          <li><a href="/operating-site"><img class="nav-drop-icon" src="/images/icons/site.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Site</span><span class="nav-drop-desc">Your website rebuilt as the operating surface</span></span></a></li>
+          <li><a href="/operating-partner"><img class="nav-drop-icon" src="/images/icons/partner.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Partner</span><span class="nav-drop-desc">The monthly rhythm that keeps the surface true</span></span></a></li>
+            <li class="nav-drop-divider" aria-hidden="true"></li>
+          <li><a href="/approach.html"><span class="nav-drop-text"><span class="nav-drop-name">Why this works</span><span class="nav-drop-desc">The approach: your site as the operating layer</span></span></a></li>
+        </ul>
+      </li>
+      <li class="nav-mobile-only"><a href="/approach.html">Approach</a></li>
+      <li><a href="/work/">Recent work</a></li>
+      <li><a href="/#contact">Contact</a></li>
+      <li><a class="nav-cta" href="/scan">Run the free Scan</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <article>
+  <section class="om-hero">
+    <div class="container">
+      <a href="/work-with-me" class="cs-back"><span class="btn-arrow">&larr;</span> Work with me</a>
+
+      <span class="section-eyebrow">Guide</span>
+      <h1 class="cs-hook">Should you block AI crawlers? Here's the actual trade.</h1>
+
+      <p class="om-lede">
+        You've seen the advice going both ways: block the bots, they're
+        stealing your work — or open everything, AI is the new front
+        door. Both are right, for different businesses. This guide lays
+        out the trade honestly, shows you what robots.txt and llms.txt
+        actually control, and helps you make the call on purpose
+        instead of by accident.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The trade, stated plainly</h2>
+
+      <p>
+        AI engines read websites for two reasons: to train models, and
+        to answer questions in real time. When someone asks ChatGPT or
+        Perplexity "who helps businesses like mine with X," the answer
+        is assembled from sites the engines were allowed to read.
+      </p>
+      <p>
+        So the decision hangs on one question: <strong>is your content
+        the product, or is it marketing for the product?</strong>
+      </p>
+      <p>
+        If the content is the product — you sell subscriptions to your
+        writing, your data, your course material — letting AI engines
+        ingest and paraphrase it can genuinely cannibalize what people
+        pay you for. Publishers who block have a real case.
+      </p>
+      <p>
+        If the content is marketing for expertise you sell as services,
+        the math flips completely. An AI engine reading your site is
+        briefing your next buyer. Blocking it doesn't protect anything —
+        your "secret" is judgment applied in engagements, not the words
+        on your site — it just removes you from answers your
+        competitors stay in. For an expert-led services business,
+        blocking AI crawlers is unilateral disarmament.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">What robots.txt actually controls</h2>
+
+      <p>
+        robots.txt is a plain-text file at yoursite.com/robots.txt that
+        tells crawlers what they may read. It's a convention, not a
+        lock — reputable crawlers honor it, hostile ones ignore it —
+        but the crawlers that matter for visibility are the reputable
+        ones, so it's where the policy lives.
+      </p>
+      <p>
+        The AI agents worth knowing by name: <strong>GPTBot</strong>
+        (OpenAI), <strong>ClaudeBot</strong> and
+        <strong>anthropic-ai</strong> (Anthropic),
+        <strong>PerplexityBot</strong>, and
+        <strong>Google-Extended</strong> — that last one controls
+        whether Google may use your content in AI training and
+        AI-powered features, separately from regular search indexing.
+        Each can be allowed or disallowed individually, which means the
+        policy can be surgical: let answer engines read everything,
+        keep specific directories private, whatever matches your
+        actual position.
+      </p>
+      <p>
+        The point isn't a particular recipe. It's that this file is a
+        decision, and someone should have made it on purpose.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The accidental block</h2>
+
+      <p>
+        Here's what the scan data behind this site keeps finding: most
+        businesses that block AI crawlers never decided to. The block
+        arrived by accident, in one of three vehicles:
+      </p>
+
+      <ul class="cs-bullets cs-bullets-rich">
+        <li>
+          <strong>A copied robots.txt.</strong> A template from a
+          developer's last project, a "best practices" blocklist from a
+          2023 blog post, pasted and forgotten. The business is
+          invisible to AI engines by its own instruction, and nobody
+          remembers writing it.
+        </li>
+        <li>
+          <strong>A security plugin's defaults.</strong> Bot-protection
+          tools that ship with "block AI scrapers" toggled on, sold as
+          protection, functioning as a gag order.
+        </li>
+        <li>
+          <strong>A blanket disallow left over from staging.</strong>
+          The <code>Disallow: /</code> that kept the unfinished site
+          out of Google in build week, still there three years later.
+        </li>
+      </ul>
+
+      <p>
+        The check takes one minute: open yoursite.com/robots.txt and
+        read what it says. If GPTBot, ClaudeBot, or a blanket disallow
+        appears and you didn't put it there deliberately, you've found
+        money on the floor.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">llms.txt: writing the machine's briefing yourself</h2>
+
+      <p>
+        robots.txt decides <em>whether</em> machines read you. llms.txt
+        decides <em>what they read first</em>. It's a plain-text file
+        at yoursite.com/llms.txt that gives AI systems a clean, current
+        summary of the business: who you are, what you sell, what it
+        costs, who it's for, where to read more.
+      </p>
+      <p>
+        Without one, an AI engine assembles its briefing from whatever
+        it can piece together across your pages — plus whatever the
+        rest of the internet says about you, current or not. With one,
+        you wrote the briefing. Every fact is yours, dated, and linked
+        to its source page.
+      </p>
+      <p>
+        What belongs in it: the one-paragraph description of the
+        business you wish every answer engine used. Your offers with
+        prices and links. Who you serve. How to reach you. What doesn't
+        belong: marketing language. It's a briefing document, not a
+        brochure — machines quote it best when it reads like facts.
+      </p>
+      <p>
+        If you allow AI crawlers at all, this file is the cheapest
+        visibility improvement available. It's an hour of writing, it
+        requires no developer, and it compounds with everything else —
+        structure, schema, content — that makes
+        <a href="/guides/can-ai-read-my-website">your site readable to
+        AI</a> in the first place. (Schema does the same telling-vs-guessing
+        work inside each page — covered in
+        <a href="/guides/schema-for-services">schema for service
+        businesses</a>.)
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">Make it a policy, not an accident</h2>
+
+      <p>
+        The end state is small and boring, which is what good
+        infrastructure looks like: a robots.txt that says what you
+        decided, an llms.txt that says what you'd want repeated, and a
+        calendar note to re-read both when the business changes. Ten
+        lines of plain text, holding the front door.
+      </p>
+      <p>
+        The businesses that get this wrong aren't careless. The files
+        are just invisible from the founder's chair — the site looks
+        identical in a browser either way. That's exactly why it
+        belongs on a checklist a machine runs, not a memory a human
+        keeps.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section om-investment">
+    <div class="container">
+      <h2 class="cs-section-title">Check your doors in two minutes</h2>
+
+      <p class="om-price-line">
+        <strong>The free Site Readiness Scan checks this exact
+        thing</strong> — whether robots.txt names AI bots, whether
+        llms.txt exists, whether a blanket disallow is hiding you —
+        along with the structure and content signals machines read.
+      </p>
+
+      <a class="btn-primary" href="/scan">
+        Run the free Scan <span class="btn-arrow">&rarr;</span>
+      </a>
+
+      <p>
+        If the doors are open but the answers about your business are
+        still wrong, that's a legibility problem —
+        <a href="/read">the Read</a> ($450) finds where it lives and
+        ranks the fixes.
+      </p>
+    </div>
+  </section>
+  </article>
+</main>
+
+<footer>
+  <img class="footer-city" src="/images/footer-city.png" alt="" width="2176" height="544" loading="lazy" aria-hidden="true">
+  <div class="container">
+    <p class="footer-tag">Operations that run beyond you.</p>
+    <div class="footer-content">
+      <span>&copy; 2026 Shane Gring</span>
+      <span><a href="https://certainly.coop" class="footer-link" target="_blank" rel="noopener noreferrer">Part of Certainly</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

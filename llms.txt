@@ -24,6 +24,21 @@ The Modern Operations Path™: five steps, each crediting into the next, prices 
 4. **[The Operating Site](https://shanegring.com/operating-site)** — Core $22,000 (6-8 weeks) or Full $38,000 (8-12 weeks), fixed price, scoped from the Map. The website replaced with a componentized, machine-readable operating surface: structured data on every page, a content system the client's team can run, documentation as a deliverable, a 90-minute handoff session. First Partner month included with every build.
 5. **[The Operating Partner](https://shanegring.com/operating-partner)** — $3,500/month (Partner+ $6,000/month, available after three months), six-month minimum. A monthly operating rhythm: a 45-minute review, the site updated to match the business, search and AI visibility monitored with fixes shipped rather than listed, and one new asset built every month.
 
+## Guides
+
+Plain-language answers to the questions behind founder-dependent websites, written out in full: https://shanegring.com/guides/
+
+- [Can AI read your website?](https://shanegring.com/guides/can-ai-read-my-website) — what machines actually read, the five signals that decide it, and the ten-minute check.
+- [Why your website isn't bringing in clients](https://shanegring.com/guides/why-your-website-isnt-bringing-in-clients) — it's rarely the design; where the real leaks are.
+- [The search signals that cost nothing](https://shanegring.com/guides/seo-basics-that-cost-nothing) — one H1, honest titles, real link labels, alt text, a sitemap.
+- [Should you block AI crawlers?](https://shanegring.com/guides/should-i-block-ai-crawlers) — the honest trade behind robots.txt and llms.txt.
+- [Build a content layer](https://shanegring.com/guides/build-a-content-layer) — turning what you already know into pages that earn cold search.
+- [One page per service](https://shanegring.com/guides/one-page-per-service) — why each service needs its own indexed page.
+- [Schema for service businesses](https://shanegring.com/guides/schema-for-services) — structured data that tells machines what you sell.
+- [Everything runs through you](https://shanegring.com/guides/everything-runs-through-you) — getting the founder's judgment out of their head.
+- [A redesign won't fix it](https://shanegring.com/guides/redesign-wont-fix-it) — redesign versus rebuild, and how to tell which you need.
+- [Your website was true at launch](https://shanegring.com/guides/your-website-was-true-at-launch) — keeping the site matched to the business as it moves.
+
 ## Free tools
 
 - **[Site Readiness Scan](https://shanegring.com/scan)**: Enter a URL and get a scored, sectioned read of how ready a site is for AI: whether AI can read it, whether it can drive its own SEO and content, and whether it could become a surface you build on rather than a brochure you maintain. The free machine version of the Read.

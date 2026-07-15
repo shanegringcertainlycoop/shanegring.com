@@ -82,9 +82,14 @@ function visitorHtml_(d) {
   }).join('');
 
   var opps = (d.opportunities || []).map(function (o) {
+    // Older payloads have no guide field — render exactly as before.
+    var hasGuide = o.guide && o.guide.url;
     return '' +
       '<p style="margin:0 0 4px;font-family:' + FONT + ';font-size:15px;font-weight:700;color:#111111;">' + esc_(o.title) + '</p>' +
-      '<p style="margin:0 0 16px;font-family:' + FONT + ';font-size:15px;line-height:1.6;color:#404040;">' + esc_(o.detail) + '</p>';
+      '<p style="margin:0 0 ' + (hasGuide ? '6px' : '16px') + ';font-family:' + FONT + ';font-size:15px;line-height:1.6;color:#404040;">' + esc_(o.detail) + '</p>' +
+      (hasGuide ?
+        '<p style="margin:0 0 16px;font-family:' + FONT + ';font-size:13px;">' +
+        '<a href="' + esc_(o.guide.url) + '" style="color:#111111;">Read the guide: ' + esc_(o.guide.title || 'the guide') + ' &rarr;</a></p>' : '');
   }).join('');
 
   return '' +
@@ -154,7 +159,8 @@ function visitorText_(d) {
     return l.title + ' (' + l.score + '/100)\n' + (l.read || '');
   }).join('\n\n');
   var oppBlock = (d.opportunities || []).map(function (o) {
-    return o.title + '\n' + (o.detail || '');
+    return o.title + '\n' + (o.detail || '') +
+      (o.guide && o.guide.url ? '\nGuide: ' + o.guide.url : '');
   }).join('\n\n');
   return 'Your Site Readiness Scan of ' + (d.url || d.site) + '\n\n' +
     'Overall readiness: ' + d.overall + '/100\n\n' +

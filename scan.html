@@ -278,9 +278,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var overall = Math.max(0, Math.min(100, parseInt(data.overall, 10) || 0));
     var lenses = (data.lenses || []).map(lensCard).join('');
     var opps = (data.opportunities || []).map(function (o) {
+      var guide = (o.guide && o.guide.url) ?
+        '<a class="sr-opp-guide" href="' + esc(o.guide.url) + '">Read the guide: ' + esc(o.guide.title) + ' <span class="btn-arrow">&rarr;</span></a>' : '';
       return '<div class="sr-opp">' +
         '<span class="sr-opp-mark" aria-hidden="true">&rarr;</span>' +
-        '<div class="sr-opp-body"><h4 class="sr-opp-title">' + esc(o.title) + '</h4><p>' + esc(o.detail) + '</p></div>' +
+        '<div class="sr-opp-body"><h4 class="sr-opp-title">' + esc(o.title) + '</h4><p>' + esc(o.detail) + '</p>' + guide + '</div>' +
       '</div>';
     }).join('');
 

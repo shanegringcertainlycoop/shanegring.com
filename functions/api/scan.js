@@ -24,6 +24,74 @@ const FETCH_TIMEOUT_MS = 9000;
 const MAX_HTML_BYTES = 600 * 1024;
 const UA = "Mozilla/5.0 (compatible; ShaneGring-SiteReadinessScan/1.0; +https://shanegring.com/scan)";
 
+// Guide catalog the model may cite in opportunities. Slugs must match live
+// pages under /guides/; unknown slugs are dropped server-side. The hint tells
+// the model when a guide fits.
+const GUIDES = {
+  "can-ai-read-my-website": {
+    title: "Can AI read your website?",
+    hint: "machine readability overall: client-side rendering hiding content, missing structure, whether AI engines can read the site at all",
+  },
+  "why-your-website-isnt-bringing-in-clients": {
+    title: "Why your website isn't bringing in clients",
+    hint: "the site looks fine but produces no inquiries; conversion and legibility leaks",
+  },
+  "everything-runs-through-you": {
+    title: "Everything in your business still runs through you",
+    hint: "founder dependency; the operating logic lives in one person, not the site or systems",
+  },
+  "redesign-wont-fix-it": {
+    title: "Thinking about a website redesign? Read this first",
+    hint: "replatform-vs-redesign decisions; the site is a static endpoint rather than a surface to build on",
+  },
+  "your-website-was-true-at-launch": {
+    title: "Your website was true the day it launched",
+    hint: "stale content; the site no longer matches the business; no update rhythm or owner",
+  },
+  "build-a-content-layer": {
+    title: "Your site needs a content layer, not more blog posts",
+    hint: "thin brochure content, low word count, no pages answering buyer questions, no organic search surface",
+  },
+  "one-page-per-service": {
+    title: "One page per service",
+    hint: "offers buried on a single services page; each service needs its own addressable landing page",
+  },
+  "schema-for-services": {
+    title: "Schema markup for service businesses, in plain English",
+    hint: "missing or thin JSON-LD; machines inferring the business instead of being told",
+  },
+  "should-i-block-ai-crawlers": {
+    title: "Should you block AI crawlers?",
+    hint: "robots.txt blocking or not addressing AI bots; missing llms.txt; crawl and AI access policy",
+  },
+  "seo-basics-that-cost-nothing": {
+    title: "The search signals that cost nothing",
+    hint: "missing or multiple H1s, heading order, weak link text, missing alt text, meta description, canonical, sitemap basics",
+  },
+};
+
+function guideList() {
+  return Object.keys(GUIDES)
+    .map(function (slug) { return slug + " — " + GUIDES[slug].hint; })
+    .join("\n");
+}
+
+// Resolve the model's guide slugs into {slug,title,url}; drop unknown slugs.
+function resolveGuides(opportunities) {
+  return (opportunities || []).map(function (o) {
+    const out = { title: o.title, detail: o.detail };
+    const g = o.guide && GUIDES[o.guide];
+    if (g) {
+      out.guide = {
+        slug: o.guide,
+        title: g.title,
+        url: "https://shanegring.com/guides/" + o.guide,
+      };
+    }
+    return out;
+  });
+}
+
 function json(body, status) {
   return new Response(JSON.stringify(body), {
     status: status || 200,
@@ -214,7 +282,11 @@ const SYSTEM_PROMPT =
 "Lens 3 — Could it be a surface you build on? How componentized/templated the build looks, whether you could spin up landing pages and variations fast, static endpoint vs a platform you extend.\n" +
 "Lens 4 — The opportunity. The operator's read: the highest-leverage moves for this site, in plain language. Open the loop — name what's worth doing without fully prescribing how.\n\n" +
 "Return exactly four lenses in order (titles: 'Can AI read it?', 'Can it drive its own SEO and content?', 'Could it be a surface you build on?', 'The opportunity') and one or two opportunities. " +
-"The 'overall' score is your weighted judgement of the whole, not a simple average.";
+"The 'overall' score is your weighted judgement of the whole, not a simple average.\n\n" +
+"For each opportunity, set 'guide' to the slug of the ONE guide below that most directly helps with that specific move, or null when none genuinely fits. " +
+"Never stretch a guide to fit — a null is better than a loose match.\n" +
+"Available guides:\n" +
+guideList();
 
 const OUTPUT_SCHEMA = {
   type: "object",
@@ -240,8 +312,9 @@ const OUTPUT_SCHEMA = {
         properties: {
           title: { type: "string" },
           detail: { type: "string" },
+          guide: { type: ["string", "null"] },
         },
-        required: ["title", "detail"],
+        required: ["title", "detail", "guide"],
         additionalProperties: false,
       },
     },
@@ -394,7 +467,7 @@ export async function onRequestPost(context) {
     url: u.href,
     overall: result.overall,
     lenses: result.lenses,
-    opportunities: result.opportunities || [],
+    opportunities: resolveGuides(result.opportunities),
   };
 
   await captureLead(env, context, {
