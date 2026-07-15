@@ -28,6 +28,10 @@ The Modern Operations Path™: five steps, each crediting into the next, prices 
 
 - **[Site Readiness Scan](https://shanegring.com/scan)**: Enter a URL and get a scored, sectioned read of how ready a site is for AI: whether AI can read it, whether it can drive its own SEO and content, and whether it could become a surface you build on rather than a brochure you maintain. The free machine version of the Read.
 
+## MCP server
+
+This site is also a Model Context Protocol server. AI assistants can connect at https://mcp.shanegring.com/mcp (streamable HTTP, no login) and call three tools: get_operating_path (the five steps and prices), about_shane (background, work, contact), and run_site_scan (the free Site Readiness Scan, run on any URL). In Claude: Settings → Connectors → Add custom connector.
+
 ## Who hires Shane
 
 Businesses where one or more of the following are true:

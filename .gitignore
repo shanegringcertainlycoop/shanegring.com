@@ -3,6 +3,7 @@
 
 # Cloudflare Wrangler local dev artifacts
 .wrangler/
+node_modules/
 
 # Editor cruft
 .vscode/

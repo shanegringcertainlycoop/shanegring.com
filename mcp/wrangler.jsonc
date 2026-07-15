@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shanegring-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [{ "name": "SHANE_MCP", "class_name": "ShaneGringMCP" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ShaneGringMCP"] }],
+  "routes": [{ "pattern": "mcp.shanegring.com", "custom_domain": true }],
+  "observability": { "enabled": true }
+}
