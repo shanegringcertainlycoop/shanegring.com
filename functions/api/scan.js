@@ -476,9 +476,10 @@ async function checkAndCount(env, ip) {
   const [ipVal, monthVal] = await Promise.all([env.SCAN_KV.get(ipKey), env.SCAN_KV.get(monthKey)]);
   const ipN = parseInt(ipVal, 10) || 0;
   const monthN = parseInt(monthVal, 10) || 0;
+  const debug = { ipKey: ipKey, ipVal: ipVal, ipN: ipN, ipHourly: ipHourly, monthVal: monthVal, monthN: monthN, monthlyCap: monthlyCap };
 
-  if (monthN >= monthlyCap) return { ok: false, capped: true };
-  if (ipN >= ipHourly) return { ok: false, rateLimited: true };
+  if (monthN >= monthlyCap) return { ok: false, capped: true, debug: debug };
+  if (ipN >= ipHourly) return { ok: false, rateLimited: true, debug: debug };
 
   await Promise.all([
     env.SCAN_KV.put(ipKey, String(ipN + 1), { expirationTtl: 7200 }),
@@ -507,6 +508,7 @@ export async function onRequestPost(context) {
     return fail("The scan is at capacity for the month — leave your email on the contact page and I'll run yours by hand.", 429);
   }
   if (gate.rateLimited) {
+    if (request.headers.get("x-scan-debug") === "1") return json({ error: "rate limited", debug: gate.debug }, 429);
     return fail("You've run a few scans already — give it an hour and try another.", 429);
   }
 
