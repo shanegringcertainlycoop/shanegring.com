@@ -190,28 +190,28 @@ function classifyFetchFailure(page) {
   if (!page) {
     return {
       code: "unreachable",
-      httpStatus: 502,
+      httpStatus: 422,
       message: "Couldn't reach that site — it may be down, very slow, or the address may be wrong. Check the URL and try again. Failed scans don't count against your allowance.",
     };
   }
   if (BLOCKED_STATUSES[page.status]) {
     return {
       code: "bot_blocked",
-      httpStatus: 502,
+      httpStatus: 422,
       message: "That site turns away automated readers (it answered " + page.status + "). That's a finding in itself — AI engines hit the same wall when they try to read it. The Read covers sites like this by hand.",
     };
   }
   if (page.status >= 400) {
     return {
       code: "http_error",
-      httpStatus: 502,
+      httpStatus: 422,
       message: "That site returned an error (" + page.status + "). Check the URL and try again.",
     };
   }
   if (!page.text) {
     return {
       code: "empty",
-      httpStatus: 502,
+      httpStatus: 422,
       message: "That site sent back an empty page. Check the URL and try again.",
     };
   }
@@ -697,13 +697,13 @@ export async function onRequestPost(context) {
   } catch (e) {
     console.log("scan-health: scan failed (model) for " + site + ": " + e.message);
     await noteFailure(env, context, "model");
-    return fail("The read failed to come back. Give it a minute and try again — failed scans don't count against your allowance.", 502);
+    return fail("The read failed to come back. Give it a minute and try again — failed scans don't count against your allowance.", 422);
   }
 
   if (!result || !Array.isArray(result.lenses) || !result.lenses.length) {
     console.log("scan-health: scan failed (malformed) for " + site);
     await noteFailure(env, context, "malformed");
-    return fail("The read came back malformed. Try once more — failed scans don't count against your allowance.", 502);
+    return fail("The read came back malformed. Try once more — failed scans don't count against your allowance.", 422);
   }
 
   if (context.waitUntil) context.waitUntil(recordScan(env, gate)); else await recordScan(env, gate);
