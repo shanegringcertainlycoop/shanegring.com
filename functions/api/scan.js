@@ -71,9 +71,17 @@ const GUIDES = {
     title: "Schema markup for service businesses, in plain English",
     hint: "missing or thin JSON-LD; machines inferring the business instead of being told",
   },
+  "move-content-into-html": {
+    title: "Your site works in a browser. Machines get a blank page.",
+    hint: "client-side rendering: likely_client_rendered is true, low visible_word_count with high script_count, real content missing from the raw HTML",
+  },
   "should-i-block-ai-crawlers": {
     title: "Should you block AI crawlers?",
     hint: "robots.txt blocking or not addressing AI bots; missing llms.txt; crawl and AI access policy",
+  },
+  "robots-txt-for-ai-crawlers": {
+    title: "Declare your AI crawl policy: the exact robots.txt lines",
+    hint: "policy implied rather than stated: robots_mentions_ai_bots is false, or the site wants the concrete allow/disallow lines for GPTBot, ClaudeBot, PerplexityBot, Google-Extended and a minimal llms.txt",
   },
   "seo-basics-that-cost-nothing": {
     title: "The search signals that cost nothing",
@@ -192,6 +200,13 @@ function classifyFetchFailure(page) {
       code: "unreachable",
       httpStatus: 422,
       message: "Couldn't reach that site — it may be down, very slow, or the address may be wrong. Check the URL and try again. Failed scans don't count against your allowance.",
+    };
+  }
+  if (page.status === 530 || (page.status >= 520 && page.status <= 527)) {
+    return {
+      code: "unreachable",
+      httpStatus: 422,
+      message: "Couldn't reach that site — the domain may not exist or its server isn't answering. Check the URL and try again. Failed scans don't count against your allowance.",
     };
   }
   if (BLOCKED_STATUSES[page.status]) {
