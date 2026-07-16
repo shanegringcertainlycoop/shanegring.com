@@ -579,21 +579,16 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   letter-spacing: -0.025em;
 }
 .hero-headline strong { font-weight: 800; }
-.hero-headline .hero-u,
-.path-definition .hero-u {
+/* Rust underline with the brand cloud drifting behind the words —
+   one per page, on that page's central noun. Global on purpose. */
+.hero-u {
   position: relative;
   text-decoration: underline;
   text-decoration-thickness: 0.07em;
   text-underline-offset: 0.16em;
   text-decoration-color: #b0433b;
 }
-.path-definition strong { color: var(--fg); font-weight: 650; }
-.path-definition .hero-c-blue { color: #38618c; }
-.path-definition .hero-c-green { color: #1a7f37; }
-.path-definition .hero-c-amber { color: #b45309; }
-/* the brand cloud drifting behind the words */
-.hero-headline .hero-u::before,
-.path-definition .hero-u::before {
+.hero-u::before {
   content: "";
   position: absolute;
   z-index: -1;
@@ -605,10 +600,13 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   opacity: 0.85;
   pointer-events: none;
 }
-/* Accent colors drawn from the pixel-art palette (lighthouse harbor) */
-.hero-c-blue { color: #38618c; }
-.hero-c-green { color: #1a7f37; }
-.hero-c-amber { color: #b45309; }
+.path-definition strong { color: var(--fg); font-weight: 650; }
+/* Accent colors drawn from the pixel-art palette (lighthouse harbor);
+   reserved for the team / buyers / machines triad. The compound
+   selectors outrank the section-scoped `strong` color rules. */
+.hero-c-blue, .om-section strong.hero-c-blue, .cs-body strong.hero-c-blue, .path-definition strong.hero-c-blue, .hero-body strong.hero-c-blue { color: #38618c; }
+.hero-c-green, .om-section strong.hero-c-green, .cs-body strong.hero-c-green, .path-definition strong.hero-c-green, .hero-body strong.hero-c-green { color: #1a7f37; }
+.hero-c-amber, .om-section strong.hero-c-amber, .cs-body strong.hero-c-amber, .path-definition strong.hero-c-amber, .hero-body strong.hero-c-amber { color: #b45309; }
 
 .hero-lead {
   font-size: clamp(1.1rem, 1.7vw, 1.3rem);
