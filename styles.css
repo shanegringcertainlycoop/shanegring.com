@@ -2417,6 +2417,43 @@ footer {
   text-decoration: none;
 }
 
+/* The Path list on work-with-me: each step reads as a clear block —
+   big quiet number, larger title, the fit line as a marked callout,
+   the CTA as a real button. */
+.path-list.cs-bullets-numbered li {
+  padding: 2.1rem 0 2.2rem 3.6rem;
+}
+.path-list.cs-bullets-numbered li::before {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--border-strong);
+  top: 2.05rem;
+}
+.path-list .path-item-head { margin-bottom: 0.9rem; }
+.path-list .path-item-title { font-size: 1.45rem; }
+.path-list .path-item-fit {
+  max-width: 640px;
+  margin: 1.1rem 0 1.3rem;
+  padding: 0.65rem 1rem;
+  background: var(--bg-soft);
+  border-left: 3px solid var(--border-strong);
+  font-size: 0.95rem;
+}
+.path-list .path-item-fit em { font-style: normal; }
+.path-list .path-item-cta {
+  margin-top: 0.2rem;
+  padding: 0.55rem 1.15rem;
+  border: 1px solid var(--fg);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.path-list .path-item-cta:hover {
+  background: var(--fg);
+  color: #fff;
+}
+
 .path-item-cta .btn-arrow { transition: transform 0.2s ease; }
 .path-item-cta:hover .btn-arrow { transform: translateX(3px); }
 
