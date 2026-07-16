@@ -13,14 +13,25 @@
  * Optional:
  *   LEAD_SHEET_URL      var       Apps Script web-app URL (logs row + sends emails)
  *   SCAN_MODEL          var       model id (default claude-sonnet-4-6)
+ *   SCAN_MODEL_FALLBACK var       model tried when the primary fails twice (default claude-haiku-4-5)
  *   SCAN_MONTHLY_CAP    var       max scans/month (default 400)
  *   SCAN_IP_HOURLY      var       max scans/IP/hour (default 3)
+ *
+ * Health: GET /api/scan?health=1 → { ok, kv, anthropic_key_present,
+ * last_success, failures_today }. Contingency activations log with the
+ * "scan-health:" prefix for Cloudflare observability.
  */
 
 const DEFAULT_MODEL = "claude-sonnet-4-6";
+const DEFAULT_FALLBACK_MODEL = "claude-haiku-4-5-20251001";
 const DEFAULT_MONTHLY_CAP = 400;
 const DEFAULT_IP_HOURLY = 3;
 const FETCH_TIMEOUT_MS = 9000;
+// First try, retry, fallback — sized so a scan where every contingency fires
+// still finishes before the frontend gives up at 90s.
+const MODEL_TIMEOUT_MS = 28000;
+const MODEL_RETRY_TIMEOUT_MS = 18000;
+const MODEL_FALLBACK_TIMEOUT_MS = 14000;
 const MAX_HTML_BYTES = 600 * 1024;
 const UA = "Mozilla/5.0 (compatible; ShaneGring-SiteReadinessScan/1.0; +https://shanegring.com/scan)";
 
@@ -168,6 +179,45 @@ async function fetchText(url, opts) {
   }
 }
 
+function sleep(ms) {
+  return new Promise(function (r) { setTimeout(r, ms); });
+}
+
+// Decide what to tell the visitor when their page couldn't be read.
+// Returns null when the page is usable; otherwise { code, httpStatus, message }.
+const BLOCKED_STATUSES = { 401: 1, 403: 1, 406: 1, 429: 1, 503: 1 };
+function classifyFetchFailure(page) {
+  if (!page) {
+    return {
+      code: "unreachable",
+      httpStatus: 502,
+      message: "Couldn't reach that site — it may be down, very slow, or the address may be wrong. Check the URL and try again. Failed scans don't count against your allowance.",
+    };
+  }
+  if (BLOCKED_STATUSES[page.status]) {
+    return {
+      code: "bot_blocked",
+      httpStatus: 502,
+      message: "That site turns away automated readers (it answered " + page.status + "). That's a finding in itself — AI engines hit the same wall when they try to read it. The Read covers sites like this by hand.",
+    };
+  }
+  if (page.status >= 400) {
+    return {
+      code: "http_error",
+      httpStatus: 502,
+      message: "That site returned an error (" + page.status + "). Check the URL and try again.",
+    };
+  }
+  if (!page.text) {
+    return {
+      code: "empty",
+      httpStatus: 502,
+      message: "That site sent back an empty page. Check the URL and try again.",
+    };
+  }
+  return null;
+}
+
 function countMatches(re, s) {
   const m = s.match(re);
   return m ? m.length : 0;
@@ -205,7 +255,7 @@ async function analyzeSitemap(host, xml) {
       let cu;
       try { cu = new URL(c); } catch (e) { return Promise.reject(new Error("bad child url")); }
       if (cu.hostname !== host || isBlockedHost(cu.hostname)) return Promise.reject(new Error("cross-host child"));
-      return fetchText(cu.href, { maxBytes: 256 * 1024, accept: "application/xml" });
+      return fetchText(cu.href, { maxBytes: 256 * 1024, accept: "application/xml", timeout: 8000 });
     }));
     fetched.forEach(function (r) {
       if (r.status !== "fulfilled" || r.value.status !== 200) { out.count_is_partial = true; return; }
@@ -408,35 +458,77 @@ const OUTPUT_SCHEMA = {
   additionalProperties: false,
 };
 
+// One attempt against one model. Throws Error with .retryable set: 429/5xx,
+// network errors, timeouts, and malformed responses are retryable; 4xx like a
+// bad key is not (retrying can't fix it).
+async function callModelOnce(env, model, userContent, timeoutMs) {
+  const ctrl = new AbortController();
+  const t = setTimeout(function () { ctrl.abort(); }, timeoutMs);
+  let res;
+  try {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 2000,
+        system: SYSTEM_PROMPT,
+        output_config: { format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
+        messages: [{ role: "user", content: userContent }],
+      }),
+      signal: ctrl.signal,
+    });
+  } catch (e) {
+    const err = new Error("anthropic network/timeout: " + e);
+    err.retryable = true;
+    throw err;
+  } finally {
+    clearTimeout(t);
+  }
+
+  if (!res.ok) {
+    const body = await res.text().catch(function () { return ""; });
+    const err = new Error("anthropic " + res.status + ": " + body.slice(0, 300));
+    err.retryable = res.status === 429 || res.status >= 500;
+    throw err;
+  }
+  try {
+    const data = await res.json();
+    const textBlock = (data.content || []).find(function (b) { return b.type === "text"; });
+    return JSON.parse(textBlock.text);
+  } catch (e) {
+    const err = new Error("anthropic malformed response: " + e);
+    err.retryable = true;
+    throw err;
+  }
+}
+
+// The read, with contingencies: one retry on the primary model, then one try
+// on a cheaper fallback model. A degraded read beats no read.
 async function runModel(env, site, signals) {
   const model = env.SCAN_MODEL || DEFAULT_MODEL;
   const userContent =
     "Site: " + site + "\n\nExtracted signals (JSON):\n" + JSON.stringify(signals, null, 1);
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: model,
-      max_tokens: 2000,
-      system: SYSTEM_PROMPT,
-      output_config: { format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
-      messages: [{ role: "user", content: userContent }],
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error("anthropic " + res.status + ": " + body.slice(0, 300));
+  try {
+    return await callModelOnce(env, model, userContent, MODEL_TIMEOUT_MS);
+  } catch (e) {
+    if (!e.retryable) throw e;
+    console.log("scan-health: model call failed, retrying: " + e.message);
+    await sleep(1000);
+    try {
+      return await callModelOnce(env, model, userContent, MODEL_RETRY_TIMEOUT_MS);
+    } catch (e2) {
+      const fallback = env.SCAN_MODEL_FALLBACK || DEFAULT_FALLBACK_MODEL;
+      if (!e2.retryable || !fallback || fallback === model) throw e2;
+      console.log("scan-health: model retry failed, using fallback " + fallback + ": " + e2.message);
+      return await callModelOnce(env, fallback, userContent, MODEL_FALLBACK_TIMEOUT_MS);
+    }
   }
-  const data = await res.json();
-  const textBlock = (data.content || []).find(function (b) { return b.type === "text"; });
-  if (!textBlock) throw new Error("no text block in model response");
-  return JSON.parse(textBlock.text);
 }
 
 // Lead capture + notification. The Apps Script behind LEAD_SHEET_URL receives
@@ -463,35 +555,81 @@ async function captureLead(env, ctx, payload) {
   if (ctx && ctx.waitUntil) ctx.waitUntil(task); else await task;
 }
 
+// Rate check only — counting moved to recordScan so failed scans don't spend
+// quota. A KV failure fails OPEN: a broken counter must never stop the scan.
 async function checkAndCount(env, ip) {
   if (!env.SCAN_KV) return { ok: true };
-  const now = new Date();
-  const month = now.getUTCFullYear() + "-" + String(now.getUTCMonth() + 1).padStart(2, "0");
-  const hourBucket = month + "-" + String(now.getUTCDate()).padStart(2, "0") + "-" + String(now.getUTCHours()).padStart(2, "0");
-  const ipKey = "ip:" + ip + ":" + hourBucket;
-  const monthKey = "month:" + month;
-  const ipHourly = parseInt(env.SCAN_IP_HOURLY, 10) || DEFAULT_IP_HOURLY;
-  const monthlyCap = parseInt(env.SCAN_MONTHLY_CAP, 10) || DEFAULT_MONTHLY_CAP;
+  try {
+    const now = new Date();
+    const month = now.getUTCFullYear() + "-" + String(now.getUTCMonth() + 1).padStart(2, "0");
+    const hourBucket = month + "-" + String(now.getUTCDate()).padStart(2, "0") + "-" + String(now.getUTCHours()).padStart(2, "0");
+    const ipKey = "ip:" + ip + ":" + hourBucket;
+    const monthKey = "month:" + month;
+    const ipHourly = parseInt(env.SCAN_IP_HOURLY, 10) || DEFAULT_IP_HOURLY;
+    const monthlyCap = parseInt(env.SCAN_MONTHLY_CAP, 10) || DEFAULT_MONTHLY_CAP;
 
-  const [ipVal, monthVal] = await Promise.all([env.SCAN_KV.get(ipKey), env.SCAN_KV.get(monthKey)]);
-  const ipN = parseInt(ipVal, 10) || 0;
-  const monthN = parseInt(monthVal, 10) || 0;
-  const debug = { ipKey: ipKey, ipVal: ipVal, ipN: ipN, ipHourly: ipHourly, monthVal: monthVal, monthN: monthN, monthlyCap: monthlyCap };
+    const [ipVal, monthVal] = await Promise.all([env.SCAN_KV.get(ipKey), env.SCAN_KV.get(monthKey)]);
+    const ipN = parseInt(ipVal, 10) || 0;
+    const monthN = parseInt(monthVal, 10) || 0;
+    const debug = { ipKey: ipKey, ipVal: ipVal, ipN: ipN, ipHourly: ipHourly, monthVal: monthVal, monthN: monthN, monthlyCap: monthlyCap };
 
-  if (monthN >= monthlyCap) return { ok: false, capped: true, debug: debug };
-  if (ipN >= ipHourly) return { ok: false, rateLimited: true, debug: debug };
+    if (monthN >= monthlyCap) return { ok: false, capped: true, debug: debug };
+    if (ipN >= ipHourly) return { ok: false, rateLimited: true, debug: debug };
 
-  return { ok: true, ipKey: ipKey, monthKey: monthKey, ipN: ipN, monthN: monthN };
+    return { ok: true, ipKey: ipKey, monthKey: monthKey, ipN: ipN, monthN: monthN };
+  } catch (e) {
+    console.log("scan-health: KV check failed, failing open: " + e);
+    return { ok: true };
+  }
 }
 
 // Count a scan only after it succeeds — a failed scan must not spend the
 // visitor's quota. Small read-then-write race is fine at this volume.
+// Also stamps last_success for the health check. Fails open.
 async function recordScan(env, gate) {
   if (!env.SCAN_KV || !gate.ipKey) return;
-  await Promise.all([
-    env.SCAN_KV.put(gate.ipKey, String(gate.ipN + 1), { expirationTtl: 7200 }),
-    env.SCAN_KV.put(gate.monthKey, String(gate.monthN + 1), { expirationTtl: 40 * 24 * 3600 }),
-  ]);
+  try {
+    await Promise.all([
+      env.SCAN_KV.put(gate.ipKey, String(gate.ipN + 1), { expirationTtl: 7200 }),
+      env.SCAN_KV.put(gate.monthKey, String(gate.monthN + 1), { expirationTtl: 40 * 24 * 3600 }),
+      env.SCAN_KV.put("last_success", new Date().toISOString(), { expirationTtl: 40 * 24 * 3600 }),
+    ]);
+  } catch (e) {
+    console.log("scan-health: KV recordScan failed, failing open: " + e);
+  }
+}
+
+// Best-effort daily failure counter for the health check. Never throws.
+async function noteFailure(env, ctx, code) {
+  try {
+    if (!env.SCAN_KV) return;
+    const key = "failures:" + new Date().toISOString().slice(0, 10);
+    const task = env.SCAN_KV.get(key).then(function (v) {
+      return env.SCAN_KV.put(key, String((parseInt(v, 10) || 0) + 1), { expirationTtl: 2 * 24 * 3600 });
+    }).catch(function (e) { console.log("scan-health: failure counter error: " + e); });
+    if (ctx && ctx.waitUntil) ctx.waitUntil(task); else await task;
+  } catch (e) {
+    console.log("scan-health: noteFailure error: " + e);
+  }
+}
+
+// GET /api/scan?health=1 — no secrets, never throws.
+async function healthCheck(env) {
+  const out = { ok: true, kv: false, anthropic_key_present: !!env.ANTHROPIC_API_KEY, last_success: null, failures_today: 0 };
+  try {
+    if (env.SCAN_KV) {
+      const day = new Date().toISOString().slice(0, 10);
+      const vals = await Promise.all([env.SCAN_KV.get("last_success"), env.SCAN_KV.get("failures:" + day)]);
+      out.kv = true;
+      out.last_success = vals[0] || null;
+      out.failures_today = parseInt(vals[1], 10) || 0;
+    }
+  } catch (e) {
+    out.kv = false;
+    out.ok = false;
+  }
+  if (!out.anthropic_key_present) out.ok = false;
+  return json(out);
 }
 
 export async function onRequestPost(context) {
@@ -518,27 +656,35 @@ export async function onRequestPost(context) {
     return fail("You've run a few scans already — give it an hour and try another.", 429);
   }
 
-  // Fetch the page + crawlability files in parallel.
-  let page, robots = "", llms = "", sitemap = "";
+  // Crawl files fetch in parallel with the page; they stay best-effort.
+  const origin = u.protocol + "//" + u.host;
+  const crawlFetches = Promise.allSettled([
+    fetchText(origin + "/robots.txt", { maxBytes: 32 * 1024, accept: "text/plain" }),
+    fetchText(origin + "/llms.txt", { maxBytes: 64 * 1024, accept: "text/plain" }),
+    fetchText(origin + "/sitemap.xml", { maxBytes: 256 * 1024, accept: "application/xml" }),
+  ]);
+
+  // The page fetch gets one retry — one flaky connection shouldn't fail the scan.
+  let page = null;
   try {
-    const origin = u.protocol + "//" + u.host;
-    const results = await Promise.allSettled([
-      fetchText(u.href),
-      fetchText(origin + "/robots.txt", { maxBytes: 32 * 1024, accept: "text/plain" }),
-      fetchText(origin + "/llms.txt", { maxBytes: 64 * 1024, accept: "text/plain" }),
-      fetchText(origin + "/sitemap.xml", { maxBytes: 256 * 1024, accept: "application/xml" }),
-    ]);
-    if (results[0].status !== "fulfilled") throw new Error("page fetch failed");
-    page = results[0].value;
-    if (results[1].status === "fulfilled" && results[1].value.status === 200) robots = results[1].value.text;
-    if (results[2].status === "fulfilled" && results[2].value.status === 200) llms = results[2].value.text;
-    if (results[3].status === "fulfilled" && results[3].value.status === 200) sitemap = results[3].value.text;
+    page = await fetchText(u.href);
   } catch (e) {
-    return fail("Couldn't reach that site — it may be down or blocking visitors. Check the URL and try again.", 502);
+    console.log("scan-health: page fetch failed, retrying: " + e);
+    await sleep(600);
+    try { page = await fetchText(u.href, { timeout: 6000 }); } catch (e2) { page = null; }
   }
 
-  if (page.status >= 400 || !page.text) {
-    return fail("That site returned an error (" + page.status + "). Check the URL and try again.", 502);
+  let robots = "", llms = "", sitemap = "";
+  const crawl = await crawlFetches;
+  if (crawl[0].status === "fulfilled" && crawl[0].value.status === 200) robots = crawl[0].value.text;
+  if (crawl[1].status === "fulfilled" && crawl[1].value.status === 200) llms = crawl[1].value.text;
+  if (crawl[2].status === "fulfilled" && crawl[2].value.status === 200) sitemap = crawl[2].value.text;
+
+  const fetchFailure = classifyFetchFailure(page);
+  if (fetchFailure) {
+    console.log("scan-health: scan failed (" + fetchFailure.code + ") for " + u.host);
+    await noteFailure(env, context, fetchFailure.code);
+    return fail(fetchFailure.message, fetchFailure.httpStatus);
   }
 
   const sitemapInfo = await analyzeSitemap(u.hostname, sitemap);
@@ -549,11 +695,15 @@ export async function onRequestPost(context) {
   try {
     result = await runModel(env, site, signals);
   } catch (e) {
-    return fail("The read failed to come back. Give it a moment and try again.", 502);
+    console.log("scan-health: scan failed (model) for " + site + ": " + e.message);
+    await noteFailure(env, context, "model");
+    return fail("The read failed to come back. Give it a minute and try again — failed scans don't count against your allowance.", 502);
   }
 
   if (!result || !Array.isArray(result.lenses) || !result.lenses.length) {
-    return fail("The read came back malformed. Try once more.", 502);
+    console.log("scan-health: scan failed (malformed) for " + site);
+    await noteFailure(env, context, "malformed");
+    return fail("The read came back malformed. Try once more — failed scans don't count against your allowance.", 502);
   }
 
   if (context.waitUntil) context.waitUntil(recordScan(env, gate)); else await recordScan(env, gate);
@@ -580,6 +730,27 @@ export async function onRequestPost(context) {
 }
 
 // Method-specific handlers take precedence; this catches everything else.
-export async function onRequest() {
+// GET ?health=1 is the ops surface; anything else gets the 405.
+export async function onRequest(context) {
+  try {
+    if (context.request.method === "GET") {
+      const url = new URL(context.request.url);
+      if (url.searchParams.get("health") === "1") return await healthCheck(context.env);
+    }
+  } catch (e) {
+    console.log("scan-health: health check error: " + e);
+  }
   return fail("POST a JSON body with url and email.", 405);
 }
+
+// For tests only — Pages routes ignore extra exports.
+export const _internals = {
+  normalizeUrl: normalizeUrl,
+  isBlockedHost: isBlockedHost,
+  classifyFetchFailure: classifyFetchFailure,
+  analyzeSitemap: analyzeSitemap,
+  checkAndCount: checkAndCount,
+  recordScan: recordScan,
+  noteFailure: noteFailure,
+  healthCheck: healthCheck,
+};

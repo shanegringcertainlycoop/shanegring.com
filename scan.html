@@ -124,7 +124,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <label class="sr-field">
               <span class="contact-flabel">Your site</span>
               <input type="text" id="sr-url" name="url" inputmode="url" autocomplete="url" spellcheck="false"
-                     placeholder="https://yourcompany.com" required>
+                     placeholder="yourcompany.com" required>
             </label>
             <label class="sr-field">
               <span class="contact-flabel">Email <em>(I'll send a copy)</em></span>
@@ -422,13 +422,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     resultEl.hidden = true;
     startLoader(url);
 
+    // Hard client timeout: the server worst-case is ~85s with every retry
+    // firing, so give up at 90s with an honest message and a live form.
+    var ctrl = new AbortController();
+    var killTimer = setTimeout(function () { ctrl.abort(); }, 90000);
+
     fetch('/api/scan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: url, email: email })
+      body: JSON.stringify({ url: url, email: email }),
+      signal: ctrl.signal
     }).then(function (res) {
       return res.json().then(function (body) { return { ok: res.ok, body: body }; });
     }).then(function (r) {
+      clearTimeout(killTimer);
       submitBtn.disabled = false;
       form.classList.remove('sr-form-busy');
       if (!r.ok || !r.body || r.body.error) {
@@ -438,10 +445,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       stopLoader();
       statusEl.hidden = true;
       render(r.body);
-    }).catch(function () {
+    }).catch(function (err) {
+      clearTimeout(killTimer);
       submitBtn.disabled = false;
       form.classList.remove('sr-form-busy');
-      showError('Couldn’t reach the scanner. Give it a moment and try again.');
+      showError(err && err.name === 'AbortError'
+        ? 'The scan is taking longer than it should. Give it a minute and try again — or email me and I’ll run it by hand.'
+        : 'Couldn’t reach the scanner. Give it a moment and try again.');
     });
   });
 })();
