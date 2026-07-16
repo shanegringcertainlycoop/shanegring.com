@@ -481,11 +481,17 @@ async function checkAndCount(env, ip) {
   if (monthN >= monthlyCap) return { ok: false, capped: true, debug: debug };
   if (ipN >= ipHourly) return { ok: false, rateLimited: true, debug: debug };
 
+  return { ok: true, ipKey: ipKey, monthKey: monthKey, ipN: ipN, monthN: monthN };
+}
+
+// Count a scan only after it succeeds — a failed scan must not spend the
+// visitor's quota. Small read-then-write race is fine at this volume.
+async function recordScan(env, gate) {
+  if (!env.SCAN_KV || !gate.ipKey) return;
   await Promise.all([
-    env.SCAN_KV.put(ipKey, String(ipN + 1), { expirationTtl: 7200 }),
-    env.SCAN_KV.put(monthKey, String(monthN + 1), { expirationTtl: 40 * 24 * 3600 }),
+    env.SCAN_KV.put(gate.ipKey, String(gate.ipN + 1), { expirationTtl: 7200 }),
+    env.SCAN_KV.put(gate.monthKey, String(gate.monthN + 1), { expirationTtl: 40 * 24 * 3600 }),
   ]);
-  return { ok: true };
 }
 
 export async function onRequestPost(context) {
@@ -549,6 +555,8 @@ export async function onRequestPost(context) {
   if (!result || !Array.isArray(result.lenses) || !result.lenses.length) {
     return fail("The read came back malformed. Try once more.", 502);
   }
+
+  if (context.waitUntil) context.waitUntil(recordScan(env, gate)); else await recordScan(env, gate);
 
   const out = {
     site: site,
