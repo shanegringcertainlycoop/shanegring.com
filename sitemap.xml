@@ -79,6 +79,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://shanegring.com/contact</loc>
+    <lastmod>2026-07-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://shanegring.com/guides/</loc>
     <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>

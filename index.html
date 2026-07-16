@@ -209,7 +209,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </li>
       <li class="nav-mobile-only"><a href="/approach.html">Approach</a></li>
       <li><a href="/work/">Recent work</a></li>
-      <li><a href="/#contact">Contact</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li><a href="/contact">Contact</a></li>
       <li><a class="nav-cta" href="/scan">Run the free Scan</a></li>
     </ul>
   </div>
@@ -233,9 +234,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     3. DONE — CTA link live and verified, and the Book-the-Map CTAs on
        /operating-map.html now point at it:
        https://cal.com/shane-gring-y1p1dw/operating-map
-    4. STILL PENDING — $1,999 STRIPE PAYMENT AT BOOKING. Cal.com's Stripe
-       app is not connected; waiting on the Stripe account fix before
-       wiring payment collection.
+    4. DONE — $1,999 STRIPE PAYMENT AT BOOKING. Cal.com's Stripe app is
+       connected to the SOEN account (acct_14T074AE4jOSazQM); the
+       operating-map event now collects $1,999 USD on booking ("Collect
+       payment on booking", refund policy: never). Verified via a live test
+       PaymentIntent that landed in SOEN as Incomplete (not charged).
   ════════════════════════════════════════════════════════════════════════════
 -->
 
@@ -261,9 +264,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <h1 class="hero-headline">
-          Get the business out of your head and into a digital system
-          your team runs, your buyers trust, and machines
-          get&nbsp;right.
+          Get the business <strong>out of your head</strong> and into a
+          <span class="hero-u">digital system</span> your team
+          <strong class="hero-c-blue">runs</strong>, your buyers
+          <strong class="hero-c-green">trust</strong>, and machines
+          <strong class="hero-c-amber">get&nbsp;right</strong>.
         </h1>
 
         <div class="hero-ctas">
@@ -311,6 +316,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="trusted-item">
         <img src="logos/iwbi.svg" alt="International WELL Building Institute" onerror="this.remove()">
         <span class="trusted-wordmark">IWBI</span>
+      </div>
+      <div class="trusted-item">
+        <img src="logos/pinchin.png" alt="Pinchin" onerror="this.remove()">
+        <span class="trusted-wordmark">Pinchin</span>
+      </div>
+      <div class="trusted-item">
+        <img src="logos/code-green.png" alt="Code Green, a Pinchin company" onerror="this.remove()">
+        <span class="trusted-wordmark">Code Green</span>
+      </div>
+      <div class="trusted-item">
+        <img src="logos/citadel-ehs.png" alt="Citadel EHS" onerror="this.remove()">
+        <span class="trusted-wordmark">Citadel EHS</span>
+      </div>
+      <div class="trusted-item">
+        <img src="logos/black-oak.png" alt="Black Oak" onerror="this.remove()">
+        <span class="trusted-wordmark">Black Oak</span>
       </div>
     </div>
   </div>
@@ -737,69 +758,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ════════════════════════════════════════════════════════════
      CONTACT
      ════════════════════════════════════════════════════════════ -->
-<section id="contact" class="fade-in">
-  <div class="container">
-    <span class="section-eyebrow">Contact</span>
-    <h2 class="section-title">Rather send a note first?</h2>
-
-    <p class="contact-cal-label">
-      The fastest way in is to <a href="#book">grab thirty minutes at the
-      top of the page</a>. Or write below. I'll reply within a
-      couple of days.
-    </p>
-
-    <div class="contact-sent" id="contact-sent" role="status">
-      <strong>Got it.</strong> Your message just landed in my inbox. I'll be in touch within a couple of days.
-    </div>
-
-    <form class="contact-form" action="https://formsubmit.co/shane.gring@certainly.coop" method="POST" aria-label="Send Shane a message">
-      <input type="hidden" name="_subject" value="New inquiry from shanegring.com">
-      <input type="hidden" name="_template" value="table">
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_next" value="https://shanegring.com/#contact-sent">
-      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-
-      <label class="contact-field">
-        <span class="contact-flabel">Name</span>
-        <input type="text" name="name" required autocomplete="name">
-      </label>
-
-      <label class="contact-field">
-        <span class="contact-flabel">Email</span>
-        <input type="email" name="email" required autocomplete="email">
-      </label>
-
-      <label class="contact-field full">
-        <span class="contact-flabel">Company <em>(optional)</em></span>
-        <input type="text" name="company" autocomplete="organization">
-      </label>
-
-      <label class="contact-field full">
-        <span class="contact-flabel">What's getting in the way?</span>
-        <textarea name="message" rows="5" required></textarea>
-      </label>
-
-      <button type="submit" class="contact-submit">Send <span class="btn-arrow">&rarr;</span></button>
-    </form>
-
-    <p class="contact-or">Or find me at:</p>
-
-    <div class="contact-grid">
-      <a href="https://linkedin.com/in/shanegring" class="contact-item" target="_blank" rel="noopener noreferrer">
-        <span class="contact-label">LinkedIn</span>
-        /in/shanegring
-      </a>
-      <a href="https://certainly.coop" class="contact-item" target="_blank" rel="noopener noreferrer">
-        <span class="contact-label">Certainly</span>
-        certainly.coop
-      </a>
-      <a href="mailto:shane.gring@certainly.coop" class="contact-item">
-        <span class="contact-label">Email</span>
-        shane.gring@certainly.coop
-      </a>
-    </div>
-  </div>
-</section>
 
 </main>
 

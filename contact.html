@@ -11,24 +11,59 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Read: five questions to start | Shane Gring</title>
-<meta name="description" content="Answer five questions so Shane can start your Read. Video and memo within 5 business days.">
+<title>Contact | Shane Gring</title>
+<meta name="description" content="Send Shane a note about what's getting in the way, or grab thirty minutes on his calendar. Replies within a couple of days.">
 <meta name="author" content="Shane Gring">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://shanegring.com/contact">
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#ffffff">
 
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contact | Shane Gring">
+<meta property="og:description" content="Send Shane a note about what's getting in the way, or grab thirty minutes on his calendar.">
+<meta property="og:url" content="https://shanegring.com/contact">
+<meta property="og:site_name" content="Shane Gring">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://shanegring.com/og-social.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact | Shane Gring">
+<meta name="twitter:description" content="Send Shane a note, or grab thirty minutes on his calendar.">
+<meta name="twitter:image" content="https://shanegring.com/og-social.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ContactPage",
+      "@id": "https://shanegring.com/contact#webpage",
+      "url": "https://shanegring.com/contact",
+      "name": "Contact | Shane Gring",
+      "about": { "@id": "https://shanegring.com/#person" },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Shane Gring", "item": "https://shanegring.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Contact", "item": "https://shanegring.com/contact" }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
-<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WHSTF58T"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
 
 <nav class="site-nav" aria-label="Site">
@@ -59,73 +94,68 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <main>
-  <section class="om-hero">
-    <div class="container">
-      <img class="offer-mark" src="/images/icons/read.png" alt="" width="48" height="48" aria-hidden="true">
-      <span class="section-eyebrow">The Read</span>
-      <h1 class="cs-hook">Order received. Ten minutes of your time, then I take it from here.</h1>
+<section class="om-hero" id="contact">
+  <div class="container">
+    <span class="section-eyebrow">Contact</span>
+    <h1 class="cs-hook">Rather send a note first?</h1>
 
-      <p class="om-lede">
-        Answer the five questions below and you're done. Your answers
-        are what the Read is built from, so the more plainly you write,
-        the sharper it gets. Watch for the video and memo in your inbox
-        within 5 business days of sending this.
-      </p>
+    <p class="contact-cal-label">
+      The fastest way in is to <a href="/#book">grab thirty minutes on my calendar</a>. Or write below. I'll reply within a
+      couple of days.
+    </p>
+
+    <div class="contact-sent" id="contact-sent" role="status">
+      <strong>Got it.</strong> Your message just landed in my inbox. I'll be in touch within a couple of days.
     </div>
-  </section>
 
-  <section class="om-section">
-    <div class="container">
+    <form class="contact-form" action="https://formsubmit.co/shane.gring@certainly.coop" method="POST" aria-label="Send Shane a message">
+      <input type="hidden" name="_subject" value="New inquiry from shanegring.com">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://shanegring.com/contact#contact-sent">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
-      <div class="contact-sent" id="intake-sent" role="status">
-        <strong>Got it.</strong> Your answers just landed in my inbox,
-        and your Read is officially underway. Video and memo within
-        5 business days. Nothing else is needed from you.
-      </div>
+      <label class="contact-field">
+        <span class="contact-flabel">Name</span>
+        <input type="text" name="name" required autocomplete="name">
+      </label>
 
-      <form class="contact-form" action="https://formsubmit.co/shane.gring@certainly.coop" method="POST" aria-label="Read intake questions">
-        <input type="hidden" name="_subject" value="New Read intake">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="https://shanegring.com/read-intake#intake-sent">
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <label class="contact-field">
+        <span class="contact-flabel">Email</span>
+        <input type="email" name="email" required autocomplete="email">
+      </label>
 
-        <label class="contact-field full">
-          <span class="contact-flabel">The email you used at checkout</span>
-          <input type="email" name="Checkout email" required autocomplete="email">
-        </label>
+      <label class="contact-field full">
+        <span class="contact-flabel">Company <em>(optional)</em></span>
+        <input type="text" name="company" autocomplete="organization">
+      </label>
 
-        <label class="contact-field full">
-          <span class="contact-flabel">1. Your URL — and any other sites or pages that represent the business (LinkedIn, subsidiary brands, old domains still live).</span>
-          <textarea name="1. URL and other sites" rows="3" required></textarea>
-        </label>
+      <label class="contact-field full">
+        <span class="contact-flabel">What's getting in the way?</span>
+        <textarea name="message" rows="5" required></textarea>
+      </label>
 
-        <label class="contact-field full">
-          <span class="contact-flabel">2. In one or two sentences: what does the business actually do today, and for whom?</span>
-          <textarea name="2. What the business does today" rows="3" required></textarea>
-        </label>
+      <button type="submit" class="contact-submit">Send <span class="btn-arrow">&rarr;</span></button>
+    </form>
 
-        <label class="contact-field full">
-          <span class="contact-flabel">3. Your two or three closest competitors — or businesses you lose deals to.</span>
-          <textarea name="3. Closest competitors" rows="3" required></textarea>
-        </label>
+    <p class="contact-or">Or find me at:</p>
 
-        <label class="contact-field full">
-          <span class="contact-flabel">4. What has changed about the business in the last two years that matters most? (Offers, positioning, team, model.)</span>
-          <textarea name="4. What changed in two years" rows="4" required></textarea>
-        </label>
-
-        <label class="contact-field full">
-          <span class="contact-flabel">5. What prompted you to buy this now?</span>
-          <textarea name="5. Why now" rows="3" required></textarea>
-        </label>
-
-        <button type="submit" class="contact-submit">Send it &mdash; start my Read <span class="btn-arrow">&rarr;</span></button>
-      </form>
-
-      <p class="contact-or">Questions? Reply to your receipt email; it reaches me directly.</p>
+    <div class="contact-grid">
+      <a href="https://linkedin.com/in/shanegring" class="contact-item" target="_blank" rel="noopener noreferrer">
+        <span class="contact-label">LinkedIn</span>
+        /in/shanegring
+      </a>
+      <a href="https://certainly.coop" class="contact-item" target="_blank" rel="noopener noreferrer">
+        <span class="contact-label">Certainly</span>
+        certainly.coop
+      </a>
+      <a href="mailto:shane.gring@certainly.coop" class="contact-item">
+        <span class="contact-label">Email</span>
+        shane.gring@certainly.coop
+      </a>
     </div>
-  </section>
+  </div>
+</section>
 </main>
 
 <footer>

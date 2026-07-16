@@ -578,6 +578,31 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   font-weight: 600;
   letter-spacing: -0.025em;
 }
+.hero-headline strong { font-weight: 800; }
+.hero-headline .hero-u {
+  position: relative;
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.16em;
+  text-decoration-color: #b0433b;
+}
+/* the brand cloud drifting behind the words */
+.hero-headline .hero-u::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -6%;
+  right: -6%;
+  top: -38%;
+  bottom: -18%;
+  background: url("/images/cloud-1.svg") no-repeat center / contain;
+  opacity: 0.85;
+  pointer-events: none;
+}
+/* Accent colors drawn from the pixel-art palette (lighthouse harbor) */
+.hero-c-blue { color: #38618c; }
+.hero-c-green { color: #1a7f37; }
+.hero-c-amber { color: #b45309; }
 
 .hero-lead {
   font-size: clamp(1.1rem, 1.7vw, 1.3rem);
@@ -1567,6 +1592,16 @@ img.om-hero-img {
   line-height: 1.6;
 }
 
+/* Guide closing CTA: emphasized prose, not the offer pages' big price lead */
+.guide-cta-line {
+  font-size: 1.15rem;
+  color: var(--fg);
+  margin-bottom: 2rem;
+  max-width: 720px;
+  line-height: 1.7;
+}
+.guide-cta-line strong { font-weight: 600; color: var(--fg); }
+
 .om-price-line strong {
   font-size: clamp(1.6rem, 2.6vw, 1.95rem);
   font-weight: 600;
@@ -1628,6 +1663,29 @@ img.om-hero-img {
 .cs-bullets li strong {
   color: var(--fg);
   font-weight: 600;
+}
+
+/* Guides index: list items with art snippets */
+.cs-bullets li.guide-item {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding-left: 0;
+}
+.cs-bullets li.guide-item::before { content: none; }
+.guide-thumb { flex-shrink: 0; display: block; }
+.guide-thumb img {
+  display: block;
+  width: 156px;
+  height: 88px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.guide-item-text { min-width: 0; }
+@media (max-width: 560px) {
+  .guide-thumb img { width: 104px; height: 66px; }
+  .cs-bullets li.guide-item { gap: 0.9rem; }
 }
 
 /* Richer variant — adds top/bottom dividers between heavy items */
@@ -2587,6 +2645,143 @@ footer .container {
 }
 .sr-intro-col { min-width: 0; }
 .sr-hero-art { align-self: center; }
+
+/* Example report on /scan — the report shown as the email you receive */
+.sr-email {
+  max-width: 640px;
+  margin: 2rem 0 2.25rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 24px 50px -28px rgba(0, 0, 0, 0.28);
+}
+.sr-email-chrome {
+  padding: 1.15rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.sr-email-chrome p.sr-email-subject {
+  margin: 0 0 0.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+.sr-email-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+.sr-email-avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--fg);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sr-email-from { line-height: 1.35; }
+.sr-email-from strong { color: var(--fg); }
+.sr-email-to { font-size: 0.75rem; }
+.sr-email-time { margin-left: auto; font-size: 0.75rem; }
+.sr-example {
+  padding: 1.75rem 2.25rem 1.75rem;
+}
+.sr-example-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.sr-example-brand {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sr-example-kind { font-size: 0.8rem; color: var(--dim); }
+.sr-example p.sr-example-site { margin: 1.6rem 0 0; font-size: 0.875rem; color: var(--dim); }
+.sr-example-site span { color: var(--fg); text-decoration: underline; }
+.sr-example p.sr-example-score {
+  margin: 0.3rem 0 0;
+  font-size: 3.25rem;
+  line-height: 1;
+  font-weight: 800;
+}
+.sr-example p.sr-example-score span { font-size: 1.3rem; font-weight: 400; color: var(--dim); }
+.sr-example-bar {
+  height: 6px;
+  margin-top: 0.85rem;
+  background: var(--border);
+  overflow: hidden;
+}
+.sr-example-bar span { display: block; height: 100%; background: #565656; }
+.sr-example-lens { margin-top: 1.6rem; }
+.sr-example-lens-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.sr-example-lens-head h3 { margin: 0; font-size: 1.05rem; }
+.sr-example .sr-example-lens p { margin: 0.6rem 0 0; font-size: 0.9375rem; line-height: 1.6; color: var(--dim); }
+.sr-example-chip {
+  flex-shrink: 0;
+  padding: 3px 12px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.sr-chip-good { background: #1a7f37; }
+.sr-chip-mid { background: #565656; }
+.sr-chip-low { background: #b45309; }
+.sr-example-start {
+  margin-top: 1.8rem;
+  padding: 1.3rem 1.4rem 1.2rem;
+  background: var(--bg-soft);
+  border-left: 3px solid var(--fg);
+}
+.sr-example-start p { margin: 0; font-size: 0.9375rem; line-height: 1.6; color: var(--dim); }
+.sr-example-start-label {
+  font-size: 0.72rem !important;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg) !important;
+  margin-bottom: 0.75rem !important;
+}
+.sr-example-start-title { font-weight: 700; color: var(--fg) !important; margin-bottom: 0.2rem !important; }
+.sr-example-guide { margin-top: 0.55rem !important; font-size: 0.85rem !important; }
+.sr-example-guide a { color: var(--fg); }
+.sr-email p.sr-example-note {
+  margin: 0;
+  padding: 0.9rem 1.5rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+.sr-hero-lighthouse {
+  display: block;
+  width: 280px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 24px 50px -28px rgba(0, 0, 0, 0.28);
+}
 .sr-hero-card {
   width: 250px;
   padding: 1.6rem 1.5rem 1.75rem;

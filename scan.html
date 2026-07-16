@@ -96,7 +96,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </li>
       <li class="nav-mobile-only"><a href="/approach.html">Approach</a></li>
       <li><a href="/work/">Recent work</a></li>
-      <li><a href="/#contact">Contact</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li><a href="/contact">Contact</a></li>
       <li><a class="nav-cta" href="/scan">Run the free Scan</a></li>
     </ul>
   </div>
@@ -133,35 +134,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="submit" class="sr-submit" id="sr-submit">
               Run the scan <span class="btn-arrow">&rarr;</span>
             </button>
-            <p class="sr-note">Free. One read per site. Takes about half a minute.</p>
+            <p class="sr-note">Free. One read per site. Reads the page you enter plus your sitemap, in about half a minute. The Read walks the whole site.</p>
           </form>
         </div>
 
         <aside class="sr-hero-art" aria-hidden="true">
-          <div class="sr-hero-card">
-            <span class="sr-hero-card-eyebrow">Sample read</span>
-            <p class="sr-hero-card-site">yoursite.com</p>
-            <div class="sr-gauge sr-hero-gauge">
-              <svg class="sr-ring" width="120" height="120" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="56" fill="none" stroke="var(--border)" stroke-width="7"/>
-                <circle cx="60" cy="60" r="56" fill="none" stroke="var(--fg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="98.52" transform="rotate(-90 60 60)"/>
-              </svg>
-              <span class="sr-gauge-num sr-hero-gauge-num">72</span>
-            </div>
-            <div class="sr-hero-rows">
-              <div class="sr-hero-row"><span class="sr-hero-row-label">Readable by AI</span><span class="sr-hero-track"><span style="width:82%"></span></span></div>
-              <div class="sr-hero-row"><span class="sr-hero-row-label">Self-driving SEO</span><span class="sr-hero-track"><span style="width:54%"></span></span></div>
-              <div class="sr-hero-row"><span class="sr-hero-row-label">Build surface</span><span class="sr-hero-track"><span style="width:64%"></span></span></div>
-              <div class="sr-hero-row"><span class="sr-hero-row-label">Opportunity</span><span class="sr-hero-track"><span style="width:73%"></span></span></div>
-            </div>
-          </div>
+          <img class="sr-hero-lighthouse" src="/images/scan-lighthouse.png" alt="" width="552" height="864" loading="lazy">
         </aside>
       </div>
 
       <div class="sr-status" id="sr-status" role="status" aria-live="polite" hidden></div>
       <div class="sr-result" id="sr-result" aria-live="polite" hidden></div>
 
-      <img class="om-hero-img" src="/images/scan-hero.png" alt="A lighthouse beam sweeping across a harbor city at dusk, lighting up a slice of the buildings while the rest sit in shadow" width="1456" height="816" loading="lazy">
     </div>
   </section>
 
@@ -205,9 +189,63 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <p>
         A score for each lens and a short, specific read, written
-        about your site, not a checklist anyone could run. It renders right
-        here on the page, and a copy lands in your inbox.
+        about your site, not a checklist anyone could run. This is
+        what lands in your inbox:
       </p>
+
+      <div class="sr-email" aria-label="Example scan report, shown as the email you receive">
+        <div class="sr-email-chrome">
+          <p class="sr-email-subject">Your Site Readiness Scan: yoursite.com &mdash; 72/100</p>
+          <div class="sr-email-meta">
+            <span class="sr-email-avatar" aria-hidden="true">SG</span>
+            <span class="sr-email-from"><strong>Shane Gring</strong> &lt;shane.gring@certainly.coop&gt;<br><span class="sr-email-to">to you</span></span>
+            <span class="sr-email-time">just now</span>
+          </div>
+        </div>
+        <div class="sr-example">
+        <div class="sr-example-head">
+          <span class="sr-example-brand">Shane Gring</span>
+          <span class="sr-example-kind">Site Readiness Scan</span>
+        </div>
+        <p class="sr-example-site">Overall readiness of <span>yoursite.com</span></p>
+        <p class="sr-example-score">72<span>&nbsp;/100</span></p>
+        <div class="sr-example-bar"><span style="width:72%"></span></div>
+
+        <div class="sr-example-lens">
+          <div class="sr-example-lens-head">
+            <h3>Can AI read it?</h3>
+            <span class="sr-example-chip sr-chip-good">84</span>
+          </div>
+          <p>The basics are covered: one H1, clean heading order, full alt
+          coverage, and a real llms.txt. Schema is thin &mdash; Organization
+          only, nothing that names what you actually sell. AI agents can read
+          the page; they just won't learn much from it.</p>
+        </div>
+
+        <div class="sr-example-lens">
+          <div class="sr-example-lens-head">
+            <h3>Can it drive its own SEO and content?</h3>
+            <span class="sr-example-chip sr-chip-low">41</span>
+          </div>
+          <p>Your sitemap lists 214 URLs, but the homepage surfaces almost
+          none of them. The content exists &mdash; it's hidden. Nothing here
+          earns a ranking on the search someone types before they know your
+          name.</p>
+        </div>
+
+        <div class="sr-example-start">
+          <p class="sr-example-start-label">Where to start</p>
+          <p class="sr-example-start-title">Surface the content you already have</p>
+          <p>The pages exist; the homepage just never points at them. Internal
+          links and one honest hub page would change what both search engines
+          and AI agents can find.</p>
+          <p class="sr-example-guide"><a href="/guides/build-a-content-layer">Read the guide: Your site needs a content layer, not more blog posts &rarr;</a></p>
+        </div>
+
+        </div>
+        <p class="sr-example-note">An example. Yours is written about your site &mdash; all four lenses, scored, with the moves ranked. It renders here on the page too.</p>
+      </div>
+
       <p>
         The scan is the first look. If the read points somewhere worth
         going, the detailed &ldquo;here's what I'd actually do&rdquo; is the

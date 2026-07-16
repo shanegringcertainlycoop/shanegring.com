@@ -173,7 +173,61 @@ function countMatches(re, s) {
   return m ? m.length : 0;
 }
 
-function extractSignals(html, robots, llms, sitemap) {
+function parseLocs(xml) {
+  const locs = [];
+  const re = /<loc>\s*([^<\s]+)\s*<\/loc>/gi;
+  let m;
+  while ((m = re.exec(xml)) !== null) locs.push(m[1]);
+  return locs;
+}
+
+// Read the sitemap for what it actually says: how many URLs, where they live.
+// Follows a sitemap index into up to 5 same-host child sitemaps. Marks the
+// count partial whenever a fetch was truncated or a child was skipped, so the
+// model can say "at least N" instead of guessing.
+async function analyzeSitemap(host, xml) {
+  const out = { present: false, is_index: false, url_count: 0, count_is_partial: false, top_paths: {} };
+  if (!xml) return out;
+  const isIndex = xml.indexOf("<sitemapindex") !== -1;
+  const isUrlset = xml.indexOf("<urlset") !== -1;
+  if (!isIndex && !isUrlset) return out;
+  out.present = true;
+  out.is_index = isIndex;
+
+  let locs = parseLocs(xml);
+  if (!/<\/(urlset|sitemapindex)>/i.test(xml)) out.count_is_partial = true;
+
+  if (isIndex) {
+    const children = locs.slice(0, 5);
+    if (locs.length > 5) out.count_is_partial = true;
+    locs = [];
+    const fetched = await Promise.allSettled(children.map(function (c) {
+      let cu;
+      try { cu = new URL(c); } catch (e) { return Promise.reject(new Error("bad child url")); }
+      if (cu.hostname !== host || isBlockedHost(cu.hostname)) return Promise.reject(new Error("cross-host child"));
+      return fetchText(cu.href, { maxBytes: 256 * 1024, accept: "application/xml" });
+    }));
+    fetched.forEach(function (r) {
+      if (r.status !== "fulfilled" || r.value.status !== 200) { out.count_is_partial = true; return; }
+      if (!/<\/urlset>/i.test(r.value.text)) out.count_is_partial = true;
+      locs = locs.concat(parseLocs(r.value.text));
+    });
+  }
+
+  out.url_count = locs.length;
+  const buckets = {};
+  locs.forEach(function (l) {
+    let p;
+    try { p = new URL(l).pathname; } catch (e) { return; }
+    const seg = p.split("/")[1] || "";
+    buckets["/" + (seg ? seg + "/" : "")] = (buckets["/" + (seg ? seg + "/" : "")] || 0) + 1;
+  });
+  Object.keys(buckets).sort(function (a, b) { return buckets[b] - buckets[a]; }).slice(0, 8)
+    .forEach(function (k) { out.top_paths[k] = buckets[k]; });
+  return out;
+}
+
+function extractSignals(html, robots, llms, sitemapInfo, host) {
   const lower = html.toLowerCase();
   const head = (html.match(/<head[\s\S]*?<\/head>/i) || [""])[0];
 
@@ -218,6 +272,29 @@ function extractSignals(html, robots, llms, sitemap) {
     if (t === "click here" || t === "read more" || t === "here" || t === "learn more" || t === "more") weakLinks++;
   });
 
+  // Internal links: how much of the site this one page actually surfaces.
+  const hrefTags = html.match(/<a[^>]+href=["'][^"'#]+["']/gi) || [];
+  const internalPaths = {};
+  let internalLinks = 0;
+  hrefTags.forEach(function (a) {
+    const hm = a.match(/href=["']([^"'#]+)["']/i);
+    if (!hm) return;
+    const href = hm[1].trim();
+    let path = null;
+    if (/^https?:\/\//i.test(href)) {
+      try {
+        const hu = new URL(href);
+        if (hu.hostname === host || hu.hostname === "www." + host || "www." + hu.hostname === host) path = hu.pathname;
+      } catch (e) {}
+    } else if (href.charAt(0) === "/" && href.charAt(1) !== "/") {
+      path = href.split("?")[0];
+    }
+    if (path !== null) {
+      internalLinks++;
+      internalPaths[path.replace(/\/$/, "") || "/"] = true;
+    }
+  });
+
   // Visible text volume (strip script/style/tags) — thin body hints at client-rendering
   const bodyOnly = (html.match(/<body[\s\S]*?<\/body>/i) || [html])[0]
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -258,6 +335,8 @@ function extractSignals(html, robots, llms, sitemap) {
     jsonld_blocks: ldBlocks.length,
     jsonld_types: Array.from(new Set(ldTypes)).slice(0, 12),
     weak_link_text_count: weakLinks,
+    internal_link_count: internalLinks,
+    internal_unique_paths: Object.keys(internalPaths).length,
     visible_word_count: wordCount,
     script_count: scriptCount,
     likely_client_rendered: wordCount < 250 && scriptCount > 3,
@@ -265,20 +344,26 @@ function extractSignals(html, robots, llms, sitemap) {
     robots_mentions_ai_bots: robotsMentionsAi,
     robots_disallows_all: robotsDisallowsAll,
     llms_txt_present: !!(llms && llms.length),
-    sitemap_xml_present: !!(sitemap && sitemap.indexOf("<urlset") !== -1) || !!(sitemap && sitemap.indexOf("<sitemapindex") !== -1),
+    sitemap_xml_present: sitemapInfo.present,
+    sitemap_is_index: sitemapInfo.is_index,
+    sitemap_url_count: sitemapInfo.url_count,
+    sitemap_url_count_is_partial: sitemapInfo.count_is_partial,
+    sitemap_top_paths: sitemapInfo.top_paths,
   };
 }
 
 const SYSTEM_PROMPT =
 "You are Shane Gring's read on a website. Shane rebuilds operations for growing businesses and treats AI as the current best tool for the work. " +
 "You are looking at one site through four lenses, using extracted signals from its HTML and its robots.txt / llms.txt / sitemap. " +
+"You see ONE fetched page plus those crawl files — not the whole site. The sitemap numbers are the ground truth for how much content exists; the fetched page shows how much of it gets surfaced. " +
+"Never claim content, a blog, or a content layer does not exist when sitemap_url_count says otherwise. If the sitemap lists URLs this page never links to, the finding is that this page hides the content layer — not that there is none. " +
 "Be specific to THIS site — point at what the signals actually show. Voice: plain, second-person, declarative. Short sentences. Mostly plain English, not jargon. " +
 "No filler, no hedging. Do not use the words 'leverage', 'utilize', 'robust', 'seamless', or 'in today's landscape'. " +
 "Score each lens 0-100 (be honest — a real brochure site scores low on lenses 2 and 3). " +
 "For each lens write a 2-4 sentence read: what's true, and what it costs them. " +
 "Then give one or two named, high-leverage moves for THIS specific site. Name the move and why it matters; do not write the step-by-step — the detailed how is a follow-up, not this scan.\n\n" +
 "Lens 1 — Can AI read it? Semantic structure and heading order, schema/JSON-LD, meta + Open Graph + a real title, llms.txt and robots crawlability for AI agents, alt and link text, and whether the real content is in the HTML or rendered client-side where agents may miss it.\n" +
-"Lens 2 — Can it drive its own SEO and content? Real content layer vs a thin brochure (use visible_word_count), internal linking and structure, whether content looks templated/extendable, sitemap and indexability basics.\n" +
+"Lens 2 — Can it drive its own SEO and content? Judge the SITE's content layer from sitemap_url_count and sitemap_top_paths (when sitemap_url_count_is_partial is true, treat the count as 'at least'), and THIS page from visible_word_count and internal_link_count / internal_unique_paths. A big sitemap behind a page that surfaces little of it is a surfacing problem, not a missing-content problem — score and write it that way. Also weigh whether content looks templated/extendable and indexability basics.\n" +
 "Lens 3 — Could it be a surface you build on? How componentized/templated the build looks, whether you could spin up landing pages and variations fast, static endpoint vs a platform you extend.\n" +
 "Lens 4 — The opportunity. The operator's read: the highest-leverage moves for this site, in plain language. Open the loop — name what's worth doing without fully prescribing how.\n\n" +
 "Return exactly four lenses in order (titles: 'Can AI read it?', 'Can it drive its own SEO and content?', 'Could it be a surface you build on?', 'The opportunity') and one or two opportunities. " +
@@ -433,7 +518,7 @@ export async function onRequestPost(context) {
       fetchText(u.href),
       fetchText(origin + "/robots.txt", { maxBytes: 32 * 1024, accept: "text/plain" }),
       fetchText(origin + "/llms.txt", { maxBytes: 64 * 1024, accept: "text/plain" }),
-      fetchText(origin + "/sitemap.xml", { maxBytes: 64 * 1024, accept: "application/xml" }),
+      fetchText(origin + "/sitemap.xml", { maxBytes: 256 * 1024, accept: "application/xml" }),
     ]);
     if (results[0].status !== "fulfilled") throw new Error("page fetch failed");
     page = results[0].value;
@@ -448,7 +533,8 @@ export async function onRequestPost(context) {
     return fail("That site returned an error (" + page.status + "). Check the URL and try again.", 502);
   }
 
-  const signals = extractSignals(page.text, robots, llms, sitemap);
+  const sitemapInfo = await analyzeSitemap(u.hostname, sitemap);
+  const signals = extractSignals(page.text, robots, llms, sitemapInfo, u.hostname);
   const site = u.host;
 
   let result;

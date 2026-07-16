@@ -60,7 +60,7 @@ const OPERATING_PATH = {
     {
       step: 4,
       name: "The Operating Site",
-      price: "Core $22,000 (6–8 weeks) or Full $38,000 (8–12 weeks), fixed price",
+      price: "Fixed price, scoped from the Map — the build proposal is the Operating Memo’s final page",
       time: "6–12 weeks, scoped from the Map",
       what: "The website replaced with a componentized, machine-readable operating surface: structured data on every page, a content system the client's team can run, documentation as a deliverable, a 90-minute handoff session.",
       credits: "First Partner month included with every build.",
@@ -69,7 +69,7 @@ const OPERATING_PATH = {
     {
       step: 5,
       name: "The Operating Partner",
-      price: "$3,500/month (Partner+ $6,000/month, available after three months)",
+      price: "Starts at $3,500/month (Partner+ $6,000/month, available after three months)",
       time: "Six-month minimum",
       what: "A monthly operating rhythm: a 45-minute review, the site updated to match the business, search and AI visibility watched with fixes shipped rather than listed, and one new asset built every month.",
       credits: "Follows a build; first month included with every Operating Site.",
@@ -112,7 +112,7 @@ const ABOUT = {
     email: "shane.gring@certainly.coop",
     linkedin: "https://linkedin.com/in/shanegring",
     website: SITE,
-    inquiry_form: `${SITE}/#contact`,
+    inquiry_form: `${SITE}/contact`,
   },
 };
 
@@ -134,7 +134,7 @@ export class ShaneGringMCP extends McpAgent<Env> {
       {
         title: "The Modern Operations Path™",
         description:
-          "Shane Gring's five-step engagement path — Scan (free), Read ($450), Operating Map ($1,999), Operating Site (from $22,000), Operating Partner ($3,500/month). " +
+          "Shane Gring's five-step engagement path — Scan (free), Read ($450), Operating Map ($1,999), Operating Site (fixed price, scoped from the Map), Operating Partner (from $3,500/month). " +
           "Returns every step with price, timeline, what it produces, and how it credits into the next. Prices are public; no discovery call needed.",
         inputSchema: {},
       },
