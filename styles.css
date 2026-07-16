@@ -579,15 +579,21 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
   letter-spacing: -0.025em;
 }
 .hero-headline strong { font-weight: 800; }
-.hero-headline .hero-u {
+.hero-headline .hero-u,
+.path-definition .hero-u {
   position: relative;
   text-decoration: underline;
   text-decoration-thickness: 0.07em;
   text-underline-offset: 0.16em;
   text-decoration-color: #b0433b;
 }
+.path-definition strong { color: var(--fg); font-weight: 650; }
+.path-definition .hero-c-blue { color: #38618c; }
+.path-definition .hero-c-green { color: #1a7f37; }
+.path-definition .hero-c-amber { color: #b45309; }
 /* the brand cloud drifting behind the words */
-.hero-headline .hero-u::before {
+.hero-headline .hero-u::before,
+.path-definition .hero-u::before {
   content: "";
   position: absolute;
   z-index: -1;
