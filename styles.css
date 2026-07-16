@@ -2417,6 +2417,16 @@ footer {
   text-decoration: none;
 }
 
+/* What "modern operations" means, stated before the Path lists the steps */
+.path-definition {
+  max-width: 680px;
+  margin: 0 0 2.4rem;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: var(--mid);
+}
+.path-definition strong { color: var(--fg); font-weight: 650; }
+
 /* The Path list on work-with-me: each step reads as a clear block —
    big quiet number, larger title, the fit line as a marked callout,
    the CTA as a real button. */

@@ -24,6 +24,7 @@ const SITE = "https://shanegring.com";
 const OPERATING_PATH = {
   name: "The Modern Operations Path™",
   overview:
+    "Modern operations means the way a business runs lives in a system, not a person: judgment, language, offers, and process written down, structured, and machine-readable — so the team can run it, buyers can trust it, and AI engines quote it instead of guessing. " +
     "Five steps, each crediting into the next. Prices are public and no step needs a discovery call to learn them. " +
     "A client who builds paid nothing for the diagnostics; a client who stops anywhere owns everything made to that point. " +
     "Every build starts with a Map — no skipping straight to a build.",
