@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WHSTF58T');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robots.txt for AI crawlers: the exact lines, plus a minimal llms.txt | Shane Gring</title>
+<meta name="description" content="The exact robots.txt lines to allow or block GPTBot, ClaudeBot, anthropic-ai, PerplexityBot, and Google-Extended — plus a minimal llms.txt. Ten minutes, and your AI crawl policy is stated instead of implied.">
+<meta name="author" content="Shane Gring">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://shanegring.com/guides/robots-txt-for-ai-crawlers">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Robots.txt for AI crawlers: the exact lines, plus a minimal llms.txt">
+<meta property="og:description" content="The exact robots.txt lines to allow or block GPTBot, ClaudeBot, PerplexityBot, and Google-Extended — plus a minimal llms.txt. Ten minutes, stated instead of implied.">
+<meta property="og:url" content="https://shanegring.com/guides/robots-txt-for-ai-crawlers">
+<meta property="og:site_name" content="Shane Gring">
+<meta property="og:image" content="https://shanegring.com/og-social.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Robots.txt for AI crawlers: the exact lines, plus a minimal llms.txt">
+<meta name="twitter:description" content="Allow or block GPTBot, ClaudeBot, PerplexityBot, and Google-Extended with the exact lines — plus a minimal llms.txt.">
+<meta name="twitter:image" content="https://shanegring.com/og-social.png">
+
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Article","@id":"https://shanegring.com/guides/robots-txt-for-ai-crawlers#article","headline":"Declare your AI crawl policy: the exact robots.txt lines","description":"How to state your AI crawl policy explicitly: the robots.txt lines for GPTBot, ClaudeBot, anthropic-ai, PerplexityBot, and Google-Extended, allow and disallow variants, how to check it took, and a minimal llms.txt.","author":{"@id":"https://shanegring.com/#person"},"publisher":{"@id":"https://shanegring.com/#person"},"mainEntityOfPage":"https://shanegring.com/guides/robots-txt-for-ai-crawlers","image":"https://shanegring.com/og-social.png"},
+{"@type":"FAQPage","@id":"https://shanegring.com/guides/robots-txt-for-ai-crawlers#faq","mainEntity":[
+{"@type":"Question","name":"What robots.txt lines allow AI crawlers?","acceptedAnswer":{"@type":"Answer","text":"Name each agent and allow it: 'User-agent: GPTBot' then 'Allow: /' — repeated for ClaudeBot, anthropic-ai, PerplexityBot, and Google-Extended. Naming them explicitly states the policy even though most crawlers treat no rule as permission."}},
+{"@type":"Question","name":"How do I block AI crawlers without hurting Google search?","acceptedAnswer":{"@type":"Answer","text":"Disallow the AI agents by name (GPTBot, ClaudeBot, anthropic-ai, PerplexityBot) and Google-Extended, and leave Googlebot untouched. Google-Extended only controls AI training and AI features — blocking it does not remove you from regular search results."}},
+{"@type":"Question","name":"Where does robots.txt live and how do I check it took?","acceptedAnswer":{"@type":"Answer","text":"At the root of the host: yoursite.com/robots.txt — one file per host, plain text. Check by opening that URL in a browser and reading it. Changes apply the next time each crawler fetches the file, usually within a day."}},
+{"@type":"Question","name":"What is the minimal llms.txt worth writing?","acceptedAnswer":{"@type":"Answer","text":"A plain-text file at yoursite.com/llms.txt with the business name, one sentence saying who you help and with what, your offers with prices and links, and how to reach you. Facts, not marketing language — machines quote it best when it reads like a briefing."}}]},
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shanegring.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://shanegring.com/guides/"},{"@type":"ListItem","position":3,"name":"Robots.txt for AI crawlers","item":"https://shanegring.com/guides/robots-txt-for-ai-crawlers"}]}]}
+</script>
+</head>
+
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WHSTF58T"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!--
+  Target query: "gptbot robots.txt" / "allow AI crawlers robots.txt" / "how to write llms.txt"
+  Suggested URL: /guides/robots-txt-for-ai-crawlers
+  Path step it feeds: The Scan (free)
+  Sibling: /guides/should-i-block-ai-crawlers owns the SHOULD; this page owns the HOW.
+-->
+
+<a class="announce-bar" href="/work-with-me">
+  <span class="announce-tag">New</span>
+  <span class="announce-text">The Modern Operations Path&trade;: five steps, enter where you are</span>
+  <span class="announce-arrow btn-arrow">&rarr;</span>
+</a>
+
+<nav class="site-nav" aria-label="Site">
+  <div class="container">
+    <a class="logo" href="/" aria-label="Shane Gring, home"><img class="logo-cloud" src="/images/cloud-1.svg" alt="Shane Gring" width="224" height="80"><img class="logo-bolt" src="/images/cloud-bolt.svg" alt="" width="32" height="48" aria-hidden="true"></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" onclick="var m=document.getElementById('nav-menu');this.setAttribute('aria-expanded',m.classList.toggle('open'))">&#9776;</button>
+    <ul id="nav-menu">
+      <li class="nav-drop">
+        <a href="/work-with-me">Work with me <span class="nav-caret">&#9662;</span></a>
+        <ul class="nav-dropdown">
+          <li class="nav-drop-label">The Modern Operations Path™</li>
+          <li><a href="/scan"><img class="nav-drop-icon" src="/images/icons/scan.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Scan</span><span class="nav-drop-desc">A free scored read of your site, in two minutes</span></span></a></li>
+          <li><a href="/read"><img class="nav-drop-icon" src="/images/icons/read.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Read</span><span class="nav-drop-desc">My eyes on your site: video walkthrough and ranked memo</span></span></a></li>
+          <li><a href="/operating-map.html"><img class="nav-drop-icon" src="/images/icons/map.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Map</span><span class="nav-drop-desc">Your business extracted and put on paper, in three weeks</span></span></a></li>
+          <li><a href="/operating-site"><img class="nav-drop-icon" src="/images/icons/site.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Site</span><span class="nav-drop-desc">Your website rebuilt as the operating surface</span></span></a></li>
+          <li><a href="/operating-partner"><img class="nav-drop-icon" src="/images/icons/partner.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Partner</span><span class="nav-drop-desc">The monthly rhythm that keeps the surface true</span></span></a></li>
+            <li class="nav-drop-divider" aria-hidden="true"></li>
+          <li><a href="/approach.html"><span class="nav-drop-text"><span class="nav-drop-name">Why this works</span><span class="nav-drop-desc">The approach: your site as the operating layer</span></span></a></li>
+        </ul>
+      </li>
+      <li class="nav-mobile-only"><a href="/approach.html">Approach</a></li>
+      <li><a href="/work/">Recent work</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a class="nav-cta" href="/scan">Run the free Scan</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <article>
+  <section class="om-hero">
+    <div class="container">
+      <a href="/guides/" class="cs-back"><span class="btn-arrow">&larr;</span> All guides</a>
+
+      <span class="section-eyebrow">Guide &middot; feeds The Scan</span>
+      <h1 class="cs-hook">Declare your AI crawl policy. Here are the exact lines.</h1>
+
+      <p class="om-lede">
+        Right now your site has an AI crawl policy whether you wrote
+        one or not — silence just means "whatever each bot decides."
+        This guide is the ten-minute fix: the exact robots.txt lines
+        for the AI crawlers that matter, the allow and the block
+        variants, how to check they took, and the minimal llms.txt
+        that goes with them. If you're still deciding <em>whether</em>
+        to open or close the door, start with
+        <a href="/guides/should-i-block-ai-crawlers">the trade behind
+        blocking AI crawlers</a> — this page is for when you've
+        decided and want it written down.
+      </p>
+
+      <img class="om-hero-img" src="/images/guides/robots-txt-for-ai-crawlers.png" alt="A harbor master at dusk painting clear pictogram rules onto a signboard at the dock gate while a queue of small boats waits on the water" width="1456" height="816" loading="lazy">
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">Where the file lives, and how the rules work</h2>
+
+      <p>
+        robots.txt is one plain-text file at the root of your host:
+        <code>yoursite.com/robots.txt</code>. Not in a folder, not
+        one per page — one file, at the root, per host (a
+        <code>www</code> and non-<code>www</code> version each read
+        their own).
+      </p>
+      <p>
+        The format is blocks. Each block names an agent, then lists
+        what it may or may not read. A crawler looks for the block
+        that names it; if none does, it falls back to the
+        <code>User-agent: *</code> block; if there's no file at all,
+        everything is allowed by default. That default is why most
+        sites' policy is implied — the bots are reading you because
+        you never said anything.
+      </p>
+      <p>
+        Implied and stated are different things. A stated policy
+        survives the next developer, the next replatform, the next
+        security plugin. An implied one lasts until someone pastes a
+        template over it.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The five agents worth naming</h2>
+
+      <ul class="cs-bullets cs-bullets-rich">
+        <li>
+          <strong>GPTBot</strong> — OpenAI. Feeds model training and
+          the reading ChatGPT does.
+        </li>
+        <li>
+          <strong>ClaudeBot</strong> — Anthropic's crawler, the one
+          that fetches pages.
+        </li>
+        <li>
+          <strong>anthropic-ai</strong> — Anthropic's training
+          token. Name both to cover Anthropic fully.
+        </li>
+        <li>
+          <strong>PerplexityBot</strong> — Perplexity, the answer
+          engine that cites sources.
+        </li>
+        <li>
+          <strong>Google-Extended</strong> — not a crawler but a
+          switch: it controls whether Google may use your content for
+          AI training and AI features. Blocking it does
+          <em>not</em> touch regular Google search — that's
+          Googlebot, a different name, and you almost certainly want
+          it left alone.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The open door, written down</h2>
+
+      <p>
+        For most expert-led services businesses — where the site is
+        marketing for judgment you sell in engagements — the right
+        policy is open, on purpose. Yes, no rule already means
+        allowed. Writing the allows anyway is the point: the file now
+        says what you decided, and a future template can't silently
+        reverse it without someone noticing the difference.
+      </p>
+
+      <pre class="guide-code"># AI crawlers: allowed, on purpose.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://yoursite.com/sitemap.xml</pre>
+
+      <p>
+        Want the door open but one room private? Rules within a block
+        stack — disallow the directory, allow the rest:
+      </p>
+
+      <pre class="guide-code">User-agent: GPTBot
+Disallow: /members/
+Allow: /</pre>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The closed door, written down</h2>
+
+      <p>
+        If your content is the product — you sell the words, the
+        data, the course material — the block looks like this. Note
+        what's missing: no <code>User-agent: *</code> disallow, and
+        no Googlebot block. You're turning away AI readers, not
+        leaving search.
+      </p>
+
+      <pre class="guide-code"># AI crawlers: blocked, on purpose.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /</pre>
+
+      <p>
+        One honest caveat, stated once: robots.txt is a convention.
+        Reputable crawlers honor it; hostile scrapers ignore it. That
+        doesn't weaken the file — the crawlers that decide your
+        visibility are the reputable ones — it just means robots.txt
+        is policy, not security.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">Check it took</h2>
+
+      <p>
+        Open <code>yoursite.com/robots.txt</code> in a browser and
+        read what's actually there. Not what you uploaded — what the
+        server serves. On site builders (Wix, Squarespace, Webflow,
+        Shopify) the file is generated from a settings screen, so
+        edit it there, then check the URL again.
+      </p>
+      <p>
+        Three things that quietly break the file: it isn't at the
+        root; the agent name is misspelled (they're case-insensitive,
+        but <code>GPT-Bot</code> matches nothing); or a stray
+        <code>Disallow: /</code> sits under
+        <code>User-agent: *</code> from staging and outranks
+        everything you just wrote. Crawlers refetch the file on their
+        own schedule — figure a day before behavior changes.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The llms.txt that goes with it</h2>
+
+      <p>
+        robots.txt says who may read. llms.txt says what to read
+        first — a briefing you write so machines stop assembling one
+        from scraps. The minimal version is four parts, plain text,
+        at <code>yoursite.com/llms.txt</code>:
+      </p>
+
+      <pre class="guide-code"># Your Business Name
+
+> One sentence: who you help, and with what.
+
+## Offers
+- [The Assessment](https://yoursite.com/assessment) — what it is, $X.
+- [The Program](https://yoursite.com/program) — what it is, $Y/month.
+
+## Contact
+- Email: you@yourbusiness.com
+- Site: https://yoursite.com</pre>
+
+      <p>
+        Facts, prices, links. No marketing language — machines quote
+        a briefing better than a brochure. An hour of writing, no
+        developer, and it compounds with everything else that makes
+        <a href="/guides/can-ai-read-my-website">your site readable
+        to AI</a>: the same telling-instead-of-guessing that
+        <a href="/guides/seo-basics-that-cost-nothing">the free
+        search signals</a> do page by page.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section om-investment">
+    <div class="container">
+      <h2 class="cs-section-title">Ten minutes, then verify it</h2>
+
+      <p class="guide-cta-line">
+        <strong>The free Site Readiness Scan checks this exact
+        thing</strong> — whether your robots.txt names the AI bots,
+        whether llms.txt exists, whether a leftover disallow is
+        overruling the policy you just wrote — along with the
+        structure and content signals machines read.
+      </p>
+
+      <a class="btn-primary" href="/scan">
+        Run the free Scan <span class="btn-arrow">&rarr;</span>
+      </a>
+
+      <p>
+        If the doors are open and stated but the answers about your
+        business still come back wrong, the problem is deeper than
+        the front door — <a href="/read">the Read</a> ($450) finds
+        where it lives and ranks the fixes.
+      </p>
+    </div>
+  </section>
+  </article>
+</main>
+
+<footer>
+  <img class="footer-city" src="/images/footer-city.png" alt="" width="2176" height="544" loading="lazy" aria-hidden="true">
+  <div class="container">
+    <p class="footer-tag">Operations that run beyond you.</p>
+    <div class="footer-content">
+      <span>&copy; 2026 Shane Gring</span>
+      <span><a href="https://certainly.coop" class="footer-link" target="_blank" rel="noopener noreferrer">Part of Certainly</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

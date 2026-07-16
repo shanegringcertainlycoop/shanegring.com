@@ -3242,3 +3242,20 @@ footer .container {
   .announce-bar { font-size: 0.78rem; padding: 0.5rem 0.85rem; gap: 0.45rem; }
   .announce-tag { display: none; }
 }
+
+/* Guide code blocks (robots.txt / llms.txt snippets) */
+.guide-code {
+  display: block;
+  max-width: 720px;
+  margin: 1.25rem 0 1.75rem;
+  padding: 1.1rem 1.3rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--fg);
+  white-space: pre;
+  overflow-x: auto;
+}

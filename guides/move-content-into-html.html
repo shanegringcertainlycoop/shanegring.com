@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WHSTF58T');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your site works in a browser. Machines get a blank page. | Shane Gring</title>
+<meta name="description" content="Client-side rendering ships a nearly empty document and lets the browser build the page. People never notice. AI engines and many crawlers do. The ten-second check, who it happens to, and the fixes ranked by effort.">
+<meta name="author" content="Shane Gring">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://shanegring.com/guides/move-content-into-html">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Your site works in a browser. Machines get a blank page.">
+<meta property="og:description" content="Client-side rendering ships an empty document and lets the browser build the page. People never notice. The machines answering your buyers' questions do.">
+<meta property="og:url" content="https://shanegring.com/guides/move-content-into-html">
+<meta property="og:site_name" content="Shane Gring">
+<meta property="og:image" content="https://shanegring.com/og-social.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Your site works in a browser. Machines get a blank page.">
+<meta name="twitter:description" content="Client-side rendering ships an empty document and lets the browser build the page. People never notice. The machines answering your buyers' questions do.">
+<meta name="twitter:image" content="https://shanegring.com/og-social.png">
+
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Article","@id":"https://shanegring.com/guides/move-content-into-html#article","headline":"Your site works in a browser. Machines get a blank page.","description":"What client-side rendering is, who it happens to, the ten-second check, and the fixes ranked by effort — so the machines answering buyer questions can actually read your site.","author":{"@id":"https://shanegring.com/#person"},"publisher":{"@id":"https://shanegring.com/#person"},"mainEntityOfPage":"https://shanegring.com/guides/move-content-into-html","image":"https://shanegring.com/og-social.png"},
+{"@type":"FAQPage","@id":"https://shanegring.com/guides/move-content-into-html#faq","mainEntity":[
+{"@type":"Question","name":"What is client-side rendering?","acceptedAnswer":{"@type":"Answer","text":"The server sends a nearly empty HTML document, and JavaScript builds the page inside the visitor's browser. A person sees the finished page. A machine reading the document as delivered sees the empty scaffolding."}},
+{"@type":"Question","name":"Does Google read JavaScript-rendered pages?","acceptedAnswer":{"@type":"Answer","text":"Usually, eventually. Google runs a rendering step that executes JavaScript, but it happens on a delay and a budget. AI engines mostly don't wait: they read the raw HTML and move on. A client-rendered site can rank on Google and still be invisible to the machines answering buyer questions."}},
+{"@type":"Question","name":"How do I check if my content is in the HTML?","acceptedAnswer":{"@type":"Answer","text":"Open your site, right-click, choose View Page Source, and search for a sentence from the middle of your page. If your own words aren't in the document, machines reading the raw HTML aren't seeing them either. The whole check takes ten seconds."}},
+{"@type":"Question","name":"Do I have to rebuild my site to fix this?","acceptedAnswer":{"@type":"Answer","text":"Usually not. Most frameworks that render client-side also support server-side rendering or static generation — often it's a build setting, not a rebuild. Prerendering services are a middle path. And sometimes the right move is smaller still: put the few pages that earn buyers into plain HTML and let the app stay an app."}}]},
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shanegring.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://shanegring.com/guides/"},{"@type":"ListItem","position":3,"name":"Move the content into the HTML","item":"https://shanegring.com/guides/move-content-into-html"}]}]}
+</script>
+</head>
+
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WHSTF58T"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!--
+  DRAFT — target query: "why is my website invisible to AI" / "client-side rendering SEO" / "content not in HTML"
+  Suggested URL: /guides/move-content-into-html
+  Path step it feeds: The Scan (free) → The Read
+-->
+
+<a class="announce-bar" href="/work-with-me">
+  <span class="announce-tag">New</span>
+  <span class="announce-text">The Modern Operations Path&trade;: five steps, enter where you are</span>
+  <span class="announce-arrow btn-arrow">&rarr;</span>
+</a>
+
+<nav class="site-nav" aria-label="Site">
+  <div class="container">
+    <a class="logo" href="/" aria-label="Shane Gring, home"><img class="logo-cloud" src="/images/cloud-1.svg" alt="Shane Gring" width="224" height="80"><img class="logo-bolt" src="/images/cloud-bolt.svg" alt="" width="32" height="48" aria-hidden="true"></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" onclick="var m=document.getElementById('nav-menu');this.setAttribute('aria-expanded',m.classList.toggle('open'))">&#9776;</button>
+    <ul id="nav-menu">
+      <li class="nav-drop">
+        <a href="/work-with-me">Work with me <span class="nav-caret">&#9662;</span></a>
+        <ul class="nav-dropdown">
+          <li class="nav-drop-label">The Modern Operations Path™</li>
+          <li><a href="/scan"><img class="nav-drop-icon" src="/images/icons/scan.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Scan</span><span class="nav-drop-desc">A free scored read of your site, in two minutes</span></span></a></li>
+          <li><a href="/read"><img class="nav-drop-icon" src="/images/icons/read.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Read</span><span class="nav-drop-desc">My eyes on your site: video walkthrough and ranked memo</span></span></a></li>
+          <li><a href="/operating-map.html"><img class="nav-drop-icon" src="/images/icons/map.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Map</span><span class="nav-drop-desc">Your business extracted and put on paper, in three weeks</span></span></a></li>
+          <li><a href="/operating-site"><img class="nav-drop-icon" src="/images/icons/site.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Site</span><span class="nav-drop-desc">Your website rebuilt as the operating surface</span></span></a></li>
+          <li><a href="/operating-partner"><img class="nav-drop-icon" src="/images/icons/partner.png" alt="" width="22" height="22"><span class="nav-drop-text"><span class="nav-drop-name">The Operating Partner</span><span class="nav-drop-desc">The monthly rhythm that keeps the surface true</span></span></a></li>
+            <li class="nav-drop-divider" aria-hidden="true"></li>
+          <li><a href="/approach.html"><span class="nav-drop-text"><span class="nav-drop-name">Why this works</span><span class="nav-drop-desc">The approach: your site as the operating layer</span></span></a></li>
+        </ul>
+      </li>
+      <li class="nav-mobile-only"><a href="/approach.html">Approach</a></li>
+      <li><a href="/work/">Recent work</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a class="nav-cta" href="/scan">Run the free Scan</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <article>
+  <section class="om-hero">
+    <div class="container">
+      <a href="/guides/" class="cs-back"><span class="btn-arrow">&larr;</span> All guides</a>
+
+      <span class="section-eyebrow">Guide &middot; feeds The Scan</span>
+      <h1 class="cs-hook">Your site works in a browser. Machines get a blank page.</h1>
+
+      <p class="om-lede">
+        There's a way of building websites where the page your buyers
+        see and the document machines read are two different things —
+        one finished, one nearly empty. Nobody notices, because in a
+        browser the site looks perfect. This guide shows you what
+        client-side rendering is, how to check your site in ten
+        seconds, and the fixes ranked by effort.
+      </p>
+
+      <img class="om-hero-img" src="/images/guides/move-content-into-html.png" alt="A finished, warmly lit building at dusk while an architect at a drafting table holds its blueprint up to the lamplight — the sheet completely blank" width="1456" height="816" loading="lazy">
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The two versions of your website</h2>
+
+      <p>
+        Every website is a document first. When a visitor arrives, your
+        server hands over an HTML file, and everything anyone learns
+        about your business starts from what's in that file.
+      </p>
+      <p>
+        Client-side rendering changes the deal. The server hands over a
+        nearly empty file — a shell — plus a load of JavaScript. The
+        visitor's browser runs the JavaScript, and the JavaScript builds
+        the page: the words, the offers, the proof, all painted in after
+        the fact. A person watching the screen sees a finished site. A
+        machine reading the document as delivered sees the scaffolding
+        with the lights off.
+      </p>
+      <p>
+        <strong>Same address, two versions: the one your buyers see and
+        the one machines read.</strong> The whole problem — and the
+        whole fix — lives in that gap.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">Who this happens to</h2>
+
+      <p>
+        Not cheap sites. Mostly the opposite. This is the signature of a
+        modern build: React, Vue, and their frameworks render
+        client-side unless someone chose otherwise. Some site builders
+        do it in their app-like modes. Headless setups land here when
+        the "connect the front end" step got done halfway. The
+        businesses affected usually paid well for their sites, and the
+        sites are genuinely good — in a browser.
+      </p>
+      <p>
+        That's why nobody catches it. The founder checks the site: it
+        looks right. The designer checks it: it looks right. Every
+        check happens in a browser, and the browser is the one place
+        the problem doesn't exist. Like the other failures covered in
+        <a href="/guides/can-ai-read-my-website">Can AI read your
+        website?</a>, this one is invisible from the founder's chair.
+        It fails silently, and it fails only where you never look.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">Why this matters more now than last year</h2>
+
+      <p>
+        For years the honest answer was "it mostly works out." Google
+        runs a rendering step that executes JavaScript, so
+        client-rendered pages usually make it into search — later than
+        plain pages, on a budget, but they get there. If Google was the
+        only machine that mattered, you could live with it.
+      </p>
+      <p>
+        Google is no longer the only machine that matters. A growing
+        share of your buyers ask ChatGPT, Claude, or Perplexity the
+        question they used to type into a search box — and the engines
+        assembling those answers mostly read the raw HTML and move on.
+        No rendering step. No second visit. If your words aren't in the
+        document, you aren't in the answer.
+      </p>
+      <p>
+        So a client-rendered site can hold its Google rankings and
+        still be a blank page to the machines your next client asks
+        first. That's the trap in plain terms: <strong>you can pass
+        the old test and fail the new one without anything on your
+        site changing.</strong>
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The ten-second check</h2>
+
+      <p>
+        Open your site. Right-click, choose <strong>View Page
+        Source</strong>, and search for a sentence from the middle of
+        your page — your own words, something specific. If it's there,
+        your content ships in the document. If it's not — if the source
+        is a short stub full of script tags — your site is
+        client-rendered, and machines reading the raw HTML are getting
+        the empty version.
+      </p>
+      <p>
+        The technical-minded can do the same from a terminal:
+        <code>curl yoursite.com</code> shows exactly what a machine
+        receives. And the free <a href="/scan">Site Readiness Scan</a>
+        checks this among its signals: a page with almost no visible
+        words and a pile of scripts is the fingerprint of a
+        client-rendered site, and the scan will say so.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">The fixes, ranked by effort</h2>
+
+      <ul class="cs-bullets cs-bullets-rich">
+        <li>
+          <strong>1. Flip the switch your framework already has.</strong>
+          Most client-rendering frameworks can render on the server or
+          generate plain pages at build time — Next, Nuxt, Astro, and
+          their peers all do it. For many sites this is a build setting
+          and a deploy, not a rebuild. Ask whoever runs your site one
+          question: "do our pages ship their content in the HTML, and
+          if not, what would server-side rendering take?" The answer
+          tells you whether this is an afternoon or a project.
+        </li>
+        <li>
+          <strong>2. Put a prerenderer in front.</strong> Prerendering
+          services run your JavaScript once, snapshot the finished
+          page, and hand that snapshot to crawlers. It's a patch, not a
+          cure — one more moving part, and the snapshots can drift
+          stale — but it beats being invisible while you plan the real
+          fix.
+        </li>
+        <li>
+          <strong>3. Move the pages that earn buyers into plain
+          HTML.</strong> Often the smartest move is the smallest. Your
+          homepage, your service pages, your pricing, your guides —
+          the pages that answer buyer questions — become plain,
+          fast-loading documents. The app stays an app behind them.
+          Pages that sell should be documents; software can stay
+          software.
+        </li>
+      </ul>
+
+      <p>
+        Whichever path fits, the finish line is the same: your own
+        sentences visible in View Source. Once they are, the cheap
+        signals start paying — the <a
+        href="/guides/seo-basics-that-cost-nothing">headings, titles,
+        and labels that cost nothing</a> only work on words machines
+        can actually see.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section">
+    <div class="container">
+      <h2 class="cs-section-title">When to leave it alone</h2>
+
+      <p>
+        Some things should be client-rendered. A dashboard behind a
+        login. A booking tool. A calculator. Software that people
+        operate — machines don't need to read it, and no buyer decision
+        rides on a crawler seeing your app's interior. The line is
+        simple: <strong>anything a stranger should learn about your
+        business must live in the document; anything a customer
+        operates can live in the app.</strong> If your marketing
+        surface is plain and readable, the app behind it can be as
+        JavaScript-heavy as it wants.
+      </p>
+    </div>
+  </section>
+
+  <section class="om-section om-investment">
+    <div class="container">
+      <h2 class="cs-section-title">Find out which version machines get</h2>
+
+      <p class="guide-cta-line">
+        <strong>The free Site Readiness Scan reads your site the way a
+        machine does</strong> — the document as delivered, not the page
+        in a browser. If your content is painted on after, the scan
+        sees the empty shell and says so, along with what else machines
+        can and can't read.
+      </p>
+
+      <a class="btn-primary" href="/scan">
+        Run the free Scan <span class="btn-arrow">&rarr;</span>
+      </a>
+
+      <p>
+        If the scan confirms the gap and you want the fix ranked
+        against everything else your site needs, that's
+        <a href="/read">the Read</a> ($450): a recorded walkthrough and
+        a memo that puts every fix in effort-versus-impact order. It
+        credits in full toward the <a
+        href="/operating-map.html">Operating Map</a> if you keep going.
+      </p>
+    </div>
+  </section>
+  </article>
+</main>
+
+<footer>
+  <img class="footer-city" src="/images/footer-city.png" alt="" width="2176" height="544" loading="lazy" aria-hidden="true">
+  <div class="container">
+    <p class="footer-tag">Operations that run beyond you.</p>
+    <div class="footer-content">
+      <span>&copy; 2026 Shane Gring</span>
+      <span><a href="https://certainly.coop" class="footer-link" target="_blank" rel="noopener noreferrer">Part of Certainly</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

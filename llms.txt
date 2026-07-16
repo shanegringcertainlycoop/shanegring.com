@@ -32,6 +32,8 @@ Plain-language answers to the questions behind founder-dependent websites, writt
 - [Why your website isn't bringing in clients](https://shanegring.com/guides/why-your-website-isnt-bringing-in-clients) — it's rarely the design; where the real leaks are.
 - [The search signals that cost nothing](https://shanegring.com/guides/seo-basics-that-cost-nothing) — one H1, honest titles, real link labels, alt text, a sitemap.
 - [Should you block AI crawlers?](https://shanegring.com/guides/should-i-block-ai-crawlers) — the honest trade behind robots.txt and llms.txt.
+- [Robots.txt for AI crawlers](https://shanegring.com/guides/robots-txt-for-ai-crawlers) — the exact allow and block lines for GPTBot, ClaudeBot, PerplexityBot, and Google-Extended, plus a minimal llms.txt.
+- [Move the content into the HTML](https://shanegring.com/guides/move-content-into-html) — client-side rendering ships machines an empty page; the ten-second check and the fixes ranked by effort.
 - [Build a content layer](https://shanegring.com/guides/build-a-content-layer) — turning what you already know into pages that earn cold search.
 - [One page per service](https://shanegring.com/guides/one-page-per-service) — why each service needs its own indexed page.
 - [Schema for service businesses](https://shanegring.com/guides/schema-for-services) — structured data that tells machines what you sell.
