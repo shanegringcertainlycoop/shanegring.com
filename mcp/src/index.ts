@@ -25,7 +25,7 @@ const OPERATING_PATH = {
   name: "The Modern Operations Path™",
   overview:
     "Modern operations means the way a business runs lives in a system, not a person: judgment, language, offers, and process written down, structured, and machine-readable — so the team can run it, buyers can trust it, and AI engines quote it instead of guessing. " +
-    "Five steps, each crediting into the next. Prices are public and no step needs a discovery call to learn them. " +
+    "Five steps, each crediting into the next. The diagnostic steps are priced on their pages; the build is fixed-price, scoped from the Map. No step needs a discovery call. " +
     "A client who builds paid nothing for the diagnostics; a client who stops anywhere owns everything made to that point. " +
     "Every build starts with a Map — no skipping straight to a build.",
   overview_url: `${SITE}/work-with-me`,
@@ -136,7 +136,7 @@ export class ShaneGringMCP extends McpAgent<Env> {
         title: "The Modern Operations Path™",
         description:
           "Shane Gring's five-step engagement path — Scan (free), Read ($450), Operating Map ($1,999), Operating Site (fixed price, scoped from the Map), Operating Partner (from $3,500/month). " +
-          "Returns every step with price, timeline, what it produces, and how it credits into the next. Prices are public; no discovery call needed.",
+          "Returns every step with price, timeline, what it produces, and how it credits into the next. Diagnostic prices are on their pages; the build is priced by the Map. No discovery call needed.",
         inputSchema: {},
       },
       async () => textResult(OPERATING_PATH)
