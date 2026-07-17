@@ -2421,6 +2421,14 @@ footer {
   text-decoration: none;
 }
 
+/* Each offer runs its rung's color through its page structure.
+   Colors sampled from the pixel icons themselves. */
+body.offer-scan    { --offer: #009b98; --offer-deep: #00615f; }
+body.offer-read    { --offer: #659cd1; --offer-deep: #3d6ea3; }
+body.offer-map     { --offer: #c791ce; --offer-deep: #7d3a8c; }
+body.offer-site    { --offer: #e89022; --offer-deep: #a8641a; }
+body.offer-partner { --offer: #ae2c1c; --offer-deep: #8e2417; }
+
 /* Offer-page structure: card grids, week timeline, aside notes —
    shapes that break up title+list monotony. Copy lives in the HTML. */
 .om-cards {
@@ -2443,7 +2451,7 @@ footer {
 }
 .om-card p { margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--mid); }
 .om-card p + p { margin-top: 0.7rem; }
-.om-card-featured { border-color: var(--fg); box-shadow: 0 14px 34px -24px rgba(0, 0, 0, 0.35); }
+.om-card-featured { border-color: var(--offer, var(--fg)); border-width: 2px; box-shadow: 0 14px 34px -24px rgba(0, 0, 0, 0.35); }
 
 .om-weeks {
   display: grid;
@@ -2476,7 +2484,7 @@ footer {
   left: 1.4rem;
   width: 12px;
   height: 12px;
-  background: var(--fg);
+  background: var(--offer, var(--fg));
   box-shadow: 3px 3px 0 var(--border);
 }
 .om-week-label {
@@ -2486,7 +2494,7 @@ footer {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--dim);
+  color: var(--offer-deep, var(--dim));
 }
 .om-week h3 { margin: 0 0 0.5rem; font-size: 1.02rem; color: var(--fg); }
 .om-week p { margin: 0; font-size: 0.93rem; line-height: 1.6; color: var(--mid); }
@@ -2496,7 +2504,7 @@ footer {
   margin: 1.6rem 0 0;
   padding: 0.65rem 1rem;
   background: var(--bg-soft);
-  border-left: 3px solid var(--border-strong);
+  border-left: 3px solid var(--offer, var(--border-strong));
   font-size: 0.95rem;
   color: var(--dim);
 }
@@ -3426,3 +3434,6 @@ footer .container {
   white-space: pre;
   overflow-x: auto;
 }
+
+/* Offer-page hero eyebrow takes the rung's deep tone */
+body[class*="offer-"] .om-hero .section-eyebrow { color: var(--offer-deep, var(--dim)); }
