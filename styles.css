@@ -2421,6 +2421,67 @@ footer {
   text-decoration: none;
 }
 
+/* Offer-page structure: card grids, week timeline, aside notes —
+   shapes that break up title+list monotony. Copy lives in the HTML. */
+.om-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.1rem;
+  margin-top: 1.7rem;
+}
+.om-card {
+  padding: 1.4rem 1.5rem 1.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.om-card h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.om-card p { margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--mid); }
+.om-card p + p { margin-top: 0.7rem; }
+.om-card-featured { border-color: var(--fg); box-shadow: 0 14px 34px -24px rgba(0, 0, 0, 0.35); }
+
+.om-weeks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  margin-top: 1.7rem;
+}
+.om-week {
+  padding: 1.3rem 1.4rem 1.4rem;
+  background: var(--bg-soft);
+  border-top: 3px solid var(--fg);
+}
+.om-week-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.om-week h3 { margin: 0 0 0.5rem; font-size: 1.02rem; color: var(--fg); }
+.om-week p { margin: 0; font-size: 0.93rem; line-height: 1.6; color: var(--mid); }
+
+.om-note {
+  max-width: 640px;
+  margin: 1.6rem 0 0;
+  padding: 0.65rem 1rem;
+  background: var(--bg-soft);
+  border-left: 3px solid var(--border-strong);
+  font-size: 0.95rem;
+  color: var(--dim);
+}
+
+@media (max-width: 720px) {
+  .om-weeks { grid-template-columns: 1fr; }
+}
+
 /* What "modern operations" means, stated before the Path lists the steps */
 .path-definition {
   max-width: 680px;
