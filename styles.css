@@ -2449,12 +2449,35 @@ footer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.1rem;
-  margin-top: 1.7rem;
+  margin-top: 2.5rem;
 }
 .om-week {
+  position: relative;
   padding: 1.3rem 1.4rem 1.4rem;
   background: var(--bg-soft);
-  border-top: 3px solid var(--fg);
+}
+/* the rail: one continuous line running above the columns */
+.om-week::before {
+  content: "";
+  position: absolute;
+  top: -1.05rem;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border-strong);
+}
+.om-week:not(:first-child)::before { left: -1.1rem; }
+.om-week:last-child::before { right: 40%; }
+/* the node: a pixel square sitting on the rail above each column */
+.om-week::after {
+  content: "";
+  position: absolute;
+  top: calc(-1.05rem - 5px);
+  left: 1.4rem;
+  width: 12px;
+  height: 12px;
+  background: var(--fg);
+  box-shadow: 3px 3px 0 var(--border);
 }
 .om-week-label {
   display: block;
@@ -2478,8 +2501,40 @@ footer {
   color: var(--dim);
 }
 
+/* Small pixel icon atop a featured card — the page's rung, nothing more */
+.om-card-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 0.65rem;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Horizontal split: section title holds the left rail, prose runs right */
+.om-split {
+  display: grid;
+  grid-template-columns: minmax(220px, 5fr) 8fr;
+  gap: 1.5rem 3.5rem;
+  align-items: start;
+}
+.om-split .cs-section-title {
+  margin-bottom: 0;
+}
+.om-split-body > p:first-child { margin-top: 0; }
+
+@media (max-width: 860px) {
+  .om-split { grid-template-columns: 1fr; gap: 0.6rem; }
+}
+
 @media (max-width: 720px) {
-  .om-weeks { grid-template-columns: 1fr; }
+  .om-weeks { grid-template-columns: 1fr; gap: 1.6rem; }
+  .om-week::before { display: none; }
+  .om-week::after {
+    top: -0.55rem;
+    left: 0;
+  }
+  .om-week { border-top: 0; padding-top: 1.5rem; }
 }
 
 /* What "modern operations" means, stated before the Path lists the steps */
