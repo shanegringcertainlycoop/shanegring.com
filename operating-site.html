@@ -102,8 +102,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
 
       <div class="om-cta-row">
-        <a class="btn-primary" href="/operating-map.html">
-          Start with the Map <span class="btn-arrow">&rarr;</span>
+        <a class="btn-primary" href="#inquiry">
+          Start the conversation <span class="btn-arrow">&rarr;</span>
         </a>
         <span class="om-cta-note">Fixed price, scoped from your Operating Map. 6 to 12 weeks.</span>
       </div>
@@ -262,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </section>
 
-  <section class="om-section om-investment">
+  <section class="om-section om-investment" id="inquiry">
     <div class="container">
       <h2 class="cs-section-title">Stop describing the business. Start operating it.</h2>
 
@@ -271,9 +271,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         Fixed price, scoped from your Map — the build proposal is the Memo’s final page.
       </p>
 
-      <a class="btn-primary" href="/operating-map.html">
-        Start with the Map <span class="btn-arrow">&rarr;</span>
-      </a>
+<div class="contact-sent" id="inquiry-sent" role="status">
+        <strong>Got it.</strong> Your note just landed in my inbox. I'll be in touch within a couple of days.
+      </div>
+
+      <form class="contact-form" action="https://formsubmit.co/shane.gring@certainly.coop" method="POST" aria-label="Send Shane a note about this">
+        <input type="hidden" name="_subject" value="Operating Site inquiry from shanegring.com">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://shanegring.com/operating-site#inquiry-sent">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+        <label class="contact-field">
+          <span class="contact-flabel">Name</span>
+          <input type="text" name="name" required autocomplete="name">
+        </label>
+
+        <label class="contact-field">
+          <span class="contact-flabel">Email</span>
+          <input type="email" name="email" required autocomplete="email">
+        </label>
+
+        <label class="contact-field full">
+          <span class="contact-flabel">Your website</span>
+          <input type="text" name="website" inputmode="url" autocomplete="url" placeholder="yourcompany.com">
+        </label>
+
+        <label class="contact-field full">
+          <span class="contact-flabel">What's breaking, or about to?</span>
+          <textarea name="message" rows="4" required></textarea>
+        </label>
+
+        <button type="submit" class="contact-submit">Start the conversation <span class="btn-arrow">&rarr;</span></button>
+      </form>
     </div>
   </section>
 </main>
