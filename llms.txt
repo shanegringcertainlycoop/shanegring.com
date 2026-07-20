@@ -26,6 +26,8 @@ The Modern Operations Path™: five steps, each crediting into the next. The dia
 4. **[The Operating Site](https://shanegring.com/operating-site)** — Fixed price, scoped from the Map (the build proposal is the Operating Memo’s final page). Core build 6-8 weeks, Full build 8-12 weeks. The website replaced with a componentized, machine-readable operating surface: structured data on every page, a content system the client's team can run, documentation as a deliverable, a 90-minute handoff session. First Partner month included with every build.
 5. **[The Operating Partner](https://shanegring.com/operating-partner)** — Starts at $3,500/month (Partner+ $6,000/month, available after three months), six-month minimum. A monthly operating rhythm: a 45-minute review, the site updated to match the business, search and AI visibility monitored with fixes shipped rather than listed, and one new asset built every month.
 
+
+Outside the Path — **[Fractional COO](https://shanegring.com/fractional-coo)**: ongoing part-time operations leadership, hired directly rather than through the productized Path. The classic engagement — an operator in the seat a few days a month. Delivered through the Operating Map and Operating Partner when it makes sense, but available as a standing arrangement on its own.
 ## Guides
 
 Plain-language answers to the questions behind founder-dependent websites, written out in full: https://shanegring.com/guides/
