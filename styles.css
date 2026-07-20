@@ -2499,6 +2499,40 @@ body.offer-partner { --offer: #ae2c1c; --offer-deep: #8e2417; }
 .om-week h3 { margin: 0 0 0.5rem; font-size: 1.02rem; color: var(--fg); }
 .om-week p { margin: 0; font-size: 0.93rem; line-height: 1.6; color: var(--mid); }
 
+/* Horizontal comparison: label left, definition right. For term/definition
+   sets that read worse as a cramped equal-height card grid. */
+.om-compare {
+  margin-top: 1.7rem;
+  border-top: 1px solid var(--border);
+}
+.om-compare-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 3fr;
+  gap: 0.4rem 2.5rem;
+  align-items: start;
+  padding: 1.4rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+.om-compare-row h3 {
+  margin: 0;
+  font-size: 1.08rem;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.om-compare-row p {
+  margin: 0;
+  max-width: 62ch;
+  line-height: 1.65;
+  color: var(--mid);
+}
+.om-compare-featured {
+  background: var(--bg-soft);
+  box-shadow: inset 3px 0 0 var(--offer, var(--fg));
+}
+@media (max-width: 640px) {
+  .om-compare-row { grid-template-columns: 1fr; gap: 0.35rem; }
+}
+
 .om-note {
   max-width: 640px;
   margin: 1.6rem 0 0;
