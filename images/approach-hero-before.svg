@@ -24,6 +24,6 @@
     <text transform="rotate(-10 522 322)"   x="522" y="322" text-anchor="middle">Sales</text>
     <text transform="rotate(9 214 470)"     x="214" y="470" text-anchor="middle">Social assets</text>
     <text transform="rotate(-6 470 462)"    x="470" y="462" text-anchor="middle">Growth</text>
-    <text transform="rotate(5 348 258)"     x="348" y="258" text-anchor="middle" fill="#8a8a8a">The website</text>
+    <text transform="rotate(-14 286 236)" x="286" y="236" text-anchor="middle" fill="#8a8a8a" font-family="'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="22" letter-spacing="0.5">the_website</text>
   </g>
 </svg>
