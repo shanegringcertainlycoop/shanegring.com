@@ -334,9 +334,32 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
 }
 
 @media (max-width: 768px) {
-  /* Mobile menu keeps a single Work-with-me link; the page itself routes */
-  .nav-caret,
-  .nav-dropdown { display: none !important; }
+  /* The open menu must paint above the hero */
+  .site-nav { z-index: 100; }
+  .nav-caret { display: none !important; }
+
+  /* Offers expand inline under "Work with me" — reachable, indented, flat */
+  nav ul.open .nav-dropdown {
+    display: flex !important;
+    position: static;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0.15rem 0 0.35rem;
+    padding: 0 0 0 0.65rem;
+    background: transparent;
+    border: 0;
+    border-left: 2px solid var(--border);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  nav ul.open .nav-dropdown::before { display: none; }
+  nav ul.open .nav-dropdown a { padding: 0.55rem 0.5rem; min-height: 40px; }
+  nav ul.open .nav-drop-label { padding: 0.55rem 0.5rem 0.3rem; }
+  nav ul.open .nav-drop-divider { display: none; }
+  nav ul.open .nav-drop-desc { display: none; }
+
+  /* The dropdown now carries "Why this works"; drop the duplicate link */
+  .nav-mobile-only { display: none !important; }
 }
 
 /* ══════════════════════════════════════════════════════════════
