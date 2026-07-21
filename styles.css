@@ -2792,6 +2792,11 @@ footer .container {
   }
 
   #transfer-session { padding: 3rem 0; }
+
+  /* The inline booking calendar is heavy on a phone; Book-a-call opens
+     Cal's own mobile-optimized popup instead. */
+  .hero-cal { display: none; }
+  .hero-copy { text-align: left; }
 }
 
 @media (max-width: 420px) {
