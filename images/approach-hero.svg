@@ -1,40 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" fill="none" role="img" aria-label="The website at the center, with SEO, design, social assets, strategy, sales, and growth all emanating from it.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" fill="none" role="img" aria-label="The website at the center, with SEO, design, strategy, sales, social assets, and growth all radiating out from it like spokes.">
   <defs>
     <marker id="ah-dark" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
       <path d="M0.5,1 L8.5,5 L0.5,9" fill="none" stroke="#404040" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <!-- spokes: everything runs from the website -->
+  <!-- six spokes radiating evenly from the hub -->
   <g stroke="#404040" stroke-width="2" stroke-linecap="round">
-    <path d="M250,208 L172,126" marker-end="url(#ah-dark)"/>
-    <path d="M230,280 L168,280" marker-end="url(#ah-dark)"/>
-    <path d="M250,352 L172,434" marker-end="url(#ah-dark)"/>
-    <path d="M390,208 L468,126" marker-end="url(#ah-dark)"/>
-    <path d="M410,280 L472,280" marker-end="url(#ah-dark)"/>
-    <path d="M390,352 L468,434" marker-end="url(#ah-dark)"/>
+    <path d="M274,226 L230,112" marker-end="url(#ah-dark)"/>
+    <path d="M366,226 L410,112" marker-end="url(#ah-dark)"/>
+    <path d="M258,262 L140,262" marker-end="url(#ah-dark)"/>
+    <path d="M382,262 L500,262" marker-end="url(#ah-dark)"/>
+    <path d="M274,298 L230,412" marker-end="url(#ah-dark)"/>
+    <path d="M366,298 L410,412" marker-end="url(#ah-dark)"/>
   </g>
 
-  <!-- the website: the central node -->
-  <rect x="230" y="203" width="180" height="154" rx="14" fill="#ffffff" stroke="#111111" stroke-width="2.6"/>
-  <line x1="230" y1="237" x2="410" y2="237" stroke="#d4d4d4" stroke-width="2"/>
-  <circle cx="252" cy="220" r="3.8" fill="none" stroke="#707070" stroke-width="1.5"/>
-  <circle cx="267" cy="220" r="3.8" fill="none" stroke="#707070" stroke-width="1.5"/>
-  <circle cx="282" cy="220" r="3.8" fill="none" stroke="#707070" stroke-width="1.5"/>
-  <rect x="250" y="252" width="140" height="40" rx="6" fill="#fafafa" stroke="#111111" stroke-width="1.5"/>
-  <line x1="264" y1="266" x2="330" y2="266" stroke="#d4d4d4" stroke-width="3" stroke-linecap="round"/>
-  <line x1="264" y1="280" x2="304" y2="280" stroke="#d4d4d4" stroke-width="3" stroke-linecap="round"/>
-  <rect x="250" y="302" width="66" height="44" rx="6" fill="#fafafa" stroke="#111111" stroke-width="1.5"/>
-  <rect x="324" y="302" width="66" height="44" rx="6" fill="#fafafa" stroke="#111111" stroke-width="1.5"/>
-  <text x="320" y="384" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2" fill="#707070">THE WEBSITE</text>
+  <!-- the website: the hub -->
+  <rect x="258" y="214" width="124" height="96" rx="13" fill="#ffffff" stroke="#111111" stroke-width="2.6"/>
+  <line x1="258" y1="244" x2="382" y2="244" stroke="#d4d4d4" stroke-width="2"/>
+  <circle cx="278" cy="229" r="3.6" fill="none" stroke="#707070" stroke-width="1.5"/>
+  <circle cx="292" cy="229" r="3.6" fill="none" stroke="#707070" stroke-width="1.5"/>
+  <circle cx="306" cy="229" r="3.6" fill="none" stroke="#707070" stroke-width="1.5"/>
+  <rect x="274" y="256" width="92" height="18" rx="4" fill="#fafafa" stroke="#111111" stroke-width="1.4"/>
+  <rect x="274" y="282" width="42" height="20" rx="4" fill="#fafafa" stroke="#111111" stroke-width="1.4"/>
+  <rect x="324" y="282" width="42" height="20" rx="4" fill="#fafafa" stroke="#111111" stroke-width="1.4"/>
+  <text x="320" y="346" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2" fill="#707070">THE WEBSITE</text>
 
-  <!-- what runs from it -->
+  <!-- the six, radiating out -->
   <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="#111111">
-    <text x="156" y="126" text-anchor="end">SEO</text>
-    <text x="156" y="288" text-anchor="end">Strategy</text>
-    <text x="156" y="450" text-anchor="end">Social assets</text>
-    <text x="484" y="126" text-anchor="start">Design</text>
-    <text x="484" y="288" text-anchor="start">Sales</text>
-    <text x="484" y="450" text-anchor="start">Growth</text>
+    <text x="222" y="104" text-anchor="end">SEO</text>
+    <text x="418" y="104" text-anchor="start">Design</text>
+    <text x="132" y="270" text-anchor="end">Strategy</text>
+    <text x="508" y="270" text-anchor="start">Sales</text>
+    <text x="222" y="424" text-anchor="end">Social assets</text>
+    <text x="418" y="424" text-anchor="start">Growth</text>
   </g>
 </svg>
