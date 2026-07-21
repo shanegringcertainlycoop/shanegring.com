@@ -2608,13 +2608,16 @@ body.offer-partner { --offer: #ae2c1c; --offer-deep: #8e2417; }
 .approach-ba {
   margin: 2.5rem 0 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: stretch;
   gap: 0;
 }
 .approach-ba-panel {
+  flex: 1 1 0;
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 1.3rem 1.5rem 1rem;
+  padding: 1.2rem 1.3rem 0.9rem;
   background: var(--bg);
 }
 .approach-ba-tag {
@@ -2636,8 +2639,13 @@ body.offer-partner { --offer: #ae2c1c; --offer-deep: #8e2417; }
   color: var(--dim);
 }
 .approach-ba-img { display: block; width: 100%; height: auto; }
-.approach-ba-mid { text-align: center; padding: 0.55rem 0; color: var(--border-strong); }
-.approach-ba-arrow { font-size: 1.7rem; line-height: 1; }
+.approach-ba-mid { display: flex; align-items: center; padding: 0 0.55rem; color: var(--border-strong); }
+.approach-ba-arrow { display: inline-block; font-size: 1.7rem; line-height: 1; }
+@media (max-width: 680px) {
+  .approach-ba { flex-direction: column; }
+  .approach-ba-mid { padding: 0.5rem 0; justify-content: center; }
+  .approach-ba-arrow { transform: rotate(90deg); }
+}
 
 /* What "modern operations" means, stated before the Path lists the steps */
 .path-definition {
