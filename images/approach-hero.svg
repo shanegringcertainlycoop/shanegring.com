@@ -5,14 +5,14 @@
     </marker>
   </defs>
 
-  <!-- six spokes radiating evenly from the hub -->
+  <!-- six spokes on even 60-degree rays, all through the hub's center (320,262) -->
   <g stroke="#404040" stroke-width="2" stroke-linecap="round">
-    <path d="M274,226 L230,112" marker-end="url(#ah-dark)"/>
-    <path d="M366,226 L410,112" marker-end="url(#ah-dark)"/>
-    <path d="M258,262 L140,262" marker-end="url(#ah-dark)"/>
-    <path d="M382,262 L500,262" marker-end="url(#ah-dark)"/>
-    <path d="M274,298 L230,412" marker-end="url(#ah-dark)"/>
-    <path d="M366,298 L410,412" marker-end="url(#ah-dark)"/>
+    <path d="M292,214 L235,115" marker-end="url(#ah-dark)"/>
+    <path d="M348,214 L405,115" marker-end="url(#ah-dark)"/>
+    <path d="M258,262 L146,262" marker-end="url(#ah-dark)"/>
+    <path d="M382,262 L494,262" marker-end="url(#ah-dark)"/>
+    <path d="M292,310 L235,409" marker-end="url(#ah-dark)"/>
+    <path d="M348,310 L405,409" marker-end="url(#ah-dark)"/>
   </g>
 
   <!-- the website: the hub -->
