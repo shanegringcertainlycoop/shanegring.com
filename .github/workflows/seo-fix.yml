@@ -1,0 +1,153 @@
+name: SEO fix (Claude)
+
+# Canonical, client-agnostic version of the "Fix with Claude" workflow.
+# Drop this file at .github/workflows/seo-fix.yml on the DEFAULT BRANCH of any
+# client's site repo. It reads the client slug from the dispatch payload and
+# fetches that client's trusted report.json, so the SAME file works on every repo.
+#
+# Per-repo setup also required:
+#   - secret ANTHROPIC_API_KEY
+#   - Settings → Actions → General → "Allow GitHub Actions to create and approve
+#     pull requests" = ON  (gh api -X PUT repos/<r>/actions/permissions/workflow
+#     -f default_workflow_permissions=write -F can_approve_pull_request_reviews=true)
+on:
+  repository_dispatch:
+    types: [seo-fix]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: seo-fix-${{ github.event.client_payload.week }}-${{ github.event.client_payload.rank }}
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Resolve fix from trusted report.json
+        id: fix
+        env:
+          CLIENT: ${{ github.event.client_payload.client }}
+          WEEK: ${{ github.event.client_payload.week }}
+          RANK: ${{ github.event.client_payload.rank }}
+        run: |
+          set -euo pipefail
+          [[ "$CLIENT" =~ ^[a-z0-9-]+$ ]] || { echo "bad client"; exit 1; }
+          [[ "$WEEK" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "bad week"; exit 1; }
+          [[ "$RANK" =~ ^[1-9]$ ]] || { echo "bad rank"; exit 1; }
+          curl -fsSL "https://reports.shanegring.com/$CLIENT/$WEEK/report.json" -o report.json
+          IDX=$((RANK-1)) node -e '
+            const r = require("./report.json");
+            const f = (r.fixes || [])[process.env.IDX];
+            if (!f) { console.error("no such fix"); process.exit(1); }
+            const plain = s => String(s||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/\s+/g," ").trim();
+            const data = (f.data||[]).map(d => plain(d.dl)+" "+plain(d.dv)).join(" · ");
+            const fix = { title: plain(f.title), path: f.path, problem: plain(f.p), next: plain(f.next), data };
+            require("fs").writeFileSync("fix.json", JSON.stringify(fix));
+            const esc = s => s.replace(/[\r\n]+/g," ");
+            require("fs").appendFileSync(process.env.GITHUB_OUTPUT,
+              "title="+esc(fix.title)+"\npath="+esc(fix.path)+"\n");
+          '
+
+      - name: Skip if a fix PR already exists
+        id: branch
+        env:
+          WEEK: ${{ github.event.client_payload.week }}
+          RANK: ${{ github.event.client_payload.rank }}
+        run: |
+          set -euo pipefail
+          BR="seo-fix/$WEEK-r$RANK"
+          echo "name=$BR" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --heads origin "$BR" >/dev/null 2>&1; then
+            echo "exists=1" >> "$GITHUB_OUTPUT"
+            echo "Branch $BR already exists — a PR is already open for this fix. Skipping."
+          else
+            echo "exists=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Claude Code
+        if: steps.branch.outputs.exists == '0'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Build the fix prompt
+        if: steps.branch.outputs.exists == '0'
+        run: |
+          node -e '
+            const f = require("./fix.json");
+            const p = [
+              "You are applying ONE specific on-page SEO fix to this website repo.",
+              "Scope discipline: change ONLY what this fix requires. Do not refactor, reformat",
+              "unrelated code, touch other pages, or change routing/components/build config.",
+              "",
+              "PAGE: " + f.path,
+              "CURRENT METRICS: " + f.data,
+              "PROBLEM: " + f.problem,
+              "RECOMMENDED CHANGE: " + f.next,
+              "",
+              "How to work:",
+              "1. Find the source file that renders this page path. Depending on the stack it",
+              "   may be an Astro page/component, a Next.js route or page file, a static .html",
+              "   file, an .mdx/.md content file, or a TS/JS data file. Explore the repo",
+              "   (pages/, app/, src/, content/, data/, public/, root .html files) to locate the",
+              "   file whose slug/path matches. If this page is rendered from an external CMS",
+              "   (Sanity, WordPress) and its body is not in the repo, only the code-side SEO",
+              "   title/meta may be editable — do just that and note the limit in FIX_NOTES.md.",
+              "2. Apply the recommended change — typically rewrite the SEO title and meta",
+              "   description around a curiosity gap, and where called for add a short, quotable",
+              "   answer plus a numbered list near the top of the page content.",
+              "3. Preserve the existing tone, data model, and formatting conventions.",
+              "4. If you cannot confidently identify the target file, make NO code changes and",
+              "   instead write FIX_NOTES.md describing what you searched for and why you stopped.",
+              "",
+              "Finish by printing a 2-3 bullet summary of exactly what you changed."
+            ].join("\n");
+            require("fs").writeFileSync("prompt.txt", p);
+          '
+
+      - name: Run Claude Code
+        if: steps.branch.outputs.exists == '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          set -euo pipefail
+          claude -p "$(cat prompt.txt)" \
+            --dangerously-skip-permissions \
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash" | tee claude-output.txt
+
+      - name: Open pull request
+        if: steps.branch.outputs.exists == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WEEK: ${{ github.event.client_payload.week }}
+          RANK: ${{ github.event.client_payload.rank }}
+          TITLE: ${{ steps.fix.outputs.title }}
+          PATH_: ${{ steps.fix.outputs.path }}
+        run: |
+          set -euo pipefail
+          SUMMARY="$(cat claude-output.txt 2>/dev/null | tail -40 || true)"
+          rm -f report.json fix.json prompt.txt claude-output.txt
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "Claude produced no changes — nothing to open a PR for."
+            exit 0
+          fi
+          git config user.name "Shane Gring"
+          git config user.email "shane.gring@certainly.coop"
+          BR="${{ steps.branch.outputs.name }}"
+          git checkout -b "$BR"
+          git add -A
+          git commit -m "SEO fix: ${TITLE} (${PATH_})"
+          git push origin "$BR"
+          printf 'Automated on-page SEO fix requested from the weekly report.\n\n**Page:** `%s`\n**Fix #%s · week %s**\n\n---\n\n%s\n\n---\n_Generated by Claude Code from reports.shanegring.com. Review before merging._\n' \
+            "$PATH_" "$RANK" "$WEEK" "$SUMMARY" > pr-body.md
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BR" \
+            --title "SEO fix: ${TITLE}" --body-file pr-body.md
