@@ -1,6 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" fill="none" role="img" aria-label="The website, SEO, design, strategy, sales, social assets, and growth all drifting apart as separate, disconnected pieces — nothing running from anything.">
-  <!-- Seven separate pieces, scattered and adrift. No lines: nothing
-       connects, there is no hub — the opposite of the radial 'after'. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" fill="none" role="img" aria-label="The website, SEO, design, strategy, sales, social assets, and growth all cross-wired to each other in a tangled, chaotic mess with no center.">
+  <!-- chaotic connections: kinked, crossing, uneven — a tangle, not a
+       tidy web. Everything is wired to everything, badly. -->
+  <g stroke="#c8c8c8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M182,124 L318,236 L392,300 L512,316"/>
+    <path d="M150,300 L336,252 L400,318 L452,452"/>
+    <path d="M470,112 L360,238 L292,318 L248,452"/>
+    <path d="M348,270 L458,452"/>
+  </g>
+  <g stroke="#d2d2d2" stroke-width="1.5" stroke-dasharray="5 6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M180,126 L232,262 L214,352 L252,452"/>
+    <path d="M498,318 L372,372 L436,430 L250,454"/>
+    <path d="M474,110 L426,220 L472,286 L502,316"/>
+    <path d="M150,300 L300,278 L348,268"/>
+    <path d="M470,116 L372,268 L456,456"/>
+    <path d="M336,300 L372,356"/>
+  </g>
+
+  <!-- the seven pieces, jumbled and greyed; the website just one more
+       label caught in the tangle -->
   <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="#a3a3a3">
     <text transform="rotate(-12 150 112)"  x="150" y="112" text-anchor="middle">SEO</text>
     <text transform="rotate(8 500 96)"      x="500" y="96"  text-anchor="middle">Design</text>
