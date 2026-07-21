@@ -170,6 +170,7 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
 
 .site-nav {
   position: relative;
+  z-index: 100;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
 }
@@ -266,7 +267,8 @@ nav .nav-cta:hover { background: #000; color: var(--bg); }
 }
 
 .nav-drop:hover .nav-dropdown,
-.nav-drop:focus-within .nav-dropdown { display: flex; }
+.nav-drop:focus-within .nav-dropdown,
+.nav-drop.open .nav-dropdown { display: flex; }
 
 .nav-dropdown li { width: 100%; }
 
