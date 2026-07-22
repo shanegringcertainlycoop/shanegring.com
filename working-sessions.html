@@ -56,16 +56,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!--
   ════════════════════════════════════════════════════════════════════════════
-  TODO to make Working Sessions one-click buyable (like the Read):
-    1. Create two Stripe Payment Links:
-         - "Working Session" — $250
-         - "Working Sessions — block of four" — $800
-    2. Paste the single-session link into the two "Book a session" CTAs
-       (search: BOOK-SESSION-CTA) and the block link into the block card
-       (search: BLOCK-CTA), replacing the interim href="/contact".
-    3. Optional: create a Cal.com event 'working-session' (60–75 min) and,
-       in Stripe, set the payment-link success URL to that booking page so
-       pay → book is one flow. Until then, /contact routes the request to me.
+  BOOKING WIRING
+    - Single session ($250): LIVE. All "Book a session" CTAs point at the
+      Cal event https://cal.com/shane-gring/working-session — 60 min,
+      Stripe, payment collected on booking, non-refundable. Pay → book is
+      one flow.
+    - Block of four ($800): still routes to /contact (search: BLOCK-CTA).
+      Cal can't sell four sessions as one booking, so to make it self-serve,
+      create a Stripe Payment Link ("Working Sessions — block of four", $800)
+      and swap the BLOCK-CTA href. After purchase, the four sessions are
+      booked one at a time via the Cal event above.
   ════════════════════════════════════════════════════════════════════════════
 -->
 
@@ -123,8 +123,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
 
       <div class="om-cta-row">
-        <!-- BOOK-SESSION-CTA: swap href for the $250 Stripe Payment Link when live -->
-        <a class="btn-primary" href="/contact">
+        <a class="btn-primary" href="https://cal.com/shane-gring/working-session">
           Book a session <span class="btn-arrow">&rarr;</span>
         </a>
         <span class="om-cta-note">$250 for one call &middot; four for $800 &middot; no retainer.</span>
@@ -222,8 +221,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p>One 60–75 minute working call on the problem in front of
           you. Book it, bring the thing, leave with it handled. That's
           the whole deal.</p>
-          <!-- BOOK-SESSION-CTA: swap href for the $250 Stripe Payment Link when live -->
-          <a class="path-item-cta" href="/contact">Book a session <span class="btn-arrow">&rarr;</span></a>
+          <a class="path-item-cta" href="https://cal.com/shane-gring/working-session">Book a session <span class="btn-arrow">&rarr;</span></a>
         </div>
         <div class="om-card">
           <h3>A block of four</h3>
@@ -313,8 +311,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
 
       <div class="om-cta-row">
-        <!-- BOOK-SESSION-CTA: swap href for the $250 Stripe Payment Link when live -->
-        <a class="btn-primary" href="/contact">
+        <a class="btn-primary" href="https://cal.com/shane-gring/working-session">
           Book a session <span class="btn-arrow">&rarr;</span>
         </a>
         <a class="btn-secondary" href="/work-with-me">
