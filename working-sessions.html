@@ -56,16 +56,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!--
   ════════════════════════════════════════════════════════════════════════════
-  BOOKING WIRING
-    - Single session ($250): LIVE. All "Book a session" CTAs point at the
-      Cal event https://cal.com/shane-gring/working-session — 60 min,
-      Stripe, payment collected on booking, non-refundable. Pay → book is
-      one flow.
-    - Block of four ($800): still routes to /contact (search: BLOCK-CTA).
-      Cal can't sell four sessions as one booking, so to make it self-serve,
-      create a Stripe Payment Link ("Working Sessions — block of four", $800)
-      and swap the BLOCK-CTA href. After purchase, the four sessions are
-      booked one at a time via the Cal event above.
+  BOOKING WIRING (both live)
+    - Single session ($250): all "Book a session" CTAs point at the Cal
+      event https://cal.com/shane-gring/working-session — 60 min, Stripe,
+      payment collected on booking, non-refundable. Pay → book is one flow.
+    - Block of four ($800): "Get the block" points at the Stripe Payment
+      Link https://checkout.shanegring.com/b/7sYeVcdlV680arI7Unfbq01
+      (SOEN account, same as the Read). Its confirmation message tells the
+      buyer they'll get a private booking link by email; the four sessions
+      are then booked one at a time. NOTE: fulfillment is currently manual
+      (Shane emails the booking link). To make block booking self-serve,
+      create a hidden FREE Cal event and point buyers there.
   ════════════════════════════════════════════════════════════════════════════
 -->
 
@@ -229,8 +230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p>Four sessions, used within three months. For the stretch
           where things keep coming up and you'd rather not book one at a
           time — an operator on call while you build.</p>
-          <!-- BLOCK-CTA: swap href for the $800 Stripe Payment Link when live -->
-          <a class="path-item-cta" href="/contact">Get the block <span class="btn-arrow">&rarr;</span></a>
+          <a class="path-item-cta" href="https://checkout.shanegring.com/b/7sYeVcdlV680arI7Unfbq01">Get the block <span class="btn-arrow">&rarr;</span></a>
         </div>
       </div>
     </div>
