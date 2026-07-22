@@ -77,6 +77,20 @@ const OPERATING_PATH = {
       url: `${SITE}/operating-partner`,
     },
   ],
+  outside_the_path: [
+    {
+      name: "Fractional COO",
+      price: "Ongoing part-time retainer, scoped to the business",
+      what: "Ongoing part-time operations leadership, hired directly rather than through the productized Path — an operator in the seat a few days a month. Delivered through the Operating Map and Operating Partner when it makes sense, or as a standing arrangement on its own.",
+      url: `${SITE}/fractional-coo`,
+    },
+    {
+      name: "Working Sessions",
+      price: "$250 a single session (60–75 min), or $800 for a block of four used within three months",
+      what: "The lowest-commitment way to get Shane's thinking: a live call to work through one operational problem with an operator who's done it — entity/LLC or cooperative setup, wiring analytics, choosing the tool stack, first systems, where AI fits. No build, no retainer. When the problem is bigger than a call, Shane points to the right step of the Path.",
+      url: `${SITE}/working-sessions`,
+    },
+  ],
 };
 
 const ABOUT = {

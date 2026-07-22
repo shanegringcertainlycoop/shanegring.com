@@ -2488,6 +2488,23 @@ body.offer-partner { --offer: #ae2c1c; --offer-deep: #8e2417; }
 .om-card p { margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--mid); }
 .om-card p + p { margin-top: 0.7rem; }
 .om-card-featured { border-color: var(--offer, var(--fg)); border-width: 2px; box-shadow: 0 14px 34px -24px rgba(0, 0, 0, 0.35); }
+.ws-price {
+  margin: 0 0 0.7rem !important;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--offer, var(--fg)) !important;
+}
+.ws-price-note {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--mid);
+  vertical-align: middle;
+}
+.om-card .path-item-cta { margin-top: 1rem; }
 
 .om-weeks {
   display: grid;
