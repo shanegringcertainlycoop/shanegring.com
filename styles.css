@@ -1258,6 +1258,45 @@ img.about-portrait {
   text-transform: uppercase;
   color: var(--dim);
 }
+/* Homepage: a clear break, then the offers that sit outside the Path */
+.shapes-aside {
+  margin-top: 3.25rem;
+  padding-top: 2.75rem;
+  border-top: 2px solid var(--border-strong);
+}
+.shapes-aside-eyebrow {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.shapes-aside-intro {
+  margin: 0.55rem 0 1.75rem;
+  max-width: 44rem;
+  font-size: 1rem;
+  color: var(--mid);
+  line-height: 1.65;
+}
+.shapes-aside-intro strong { color: var(--fg); font-weight: 600; }
+.shapes-aside-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+.shape-aside-card {
+  padding: 1.5rem 1.6rem 1.6rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.shape-aside-card .shape-title { margin-bottom: 0.6rem; }
+.shape-aside-card .shape-body { max-width: none; }
+@media (max-width: 640px) {
+  .shapes-aside-grid { grid-template-columns: 1fr; }
+}
+
 .approach-cta { margin-top: 1.5rem; }
 .approach-cta .btn-secondary { padding-left: 0; }
 
